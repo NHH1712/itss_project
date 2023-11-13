@@ -15,7 +15,7 @@ const Home = () => {
             <div className="text-lg flex items-center justify-center mx-auto">
               HedSocial helps you connect and share with the people in your life.<br/>
             </div>
-            <div className="flex">
+            <div className="flex items-center justify-center">
               <Link to='/login' className="border-gray-200 border xl:py-3 xl:px-12 px-8 py-3 rounded-lg font-semibold hover:bg-green-500 hover:text-white transition-all">Login</Link>
               <Link to='signup' className="border-gray-200 border xl:py-3 xl:px-12 px-8 py-3 rounded-lg font-semibold hover:bg-green-500 hover:text-white transition-all">Signup</Link>
             </div>
