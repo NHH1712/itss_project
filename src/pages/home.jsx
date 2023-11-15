@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import Header from "../components/header";
+import Header from "../components/Header";
 const Home = () => {
   return (
     <div className="h-screen w-screen bg-gray-100">
