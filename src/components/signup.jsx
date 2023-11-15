@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 const Signup = () => {
   return (
+    <form>
     <div className="h-screen w-screen bg-[#e7e5e4] flex justify-center items-center">
       <div className="bg-white w-3/5 h-fit rounded">
         <div className="font-bold text-3xl text-center my-4">Signup</div>
@@ -83,6 +84,7 @@ const Signup = () => {
         </div>
       </div>
     </div>
+    </form>
   );
 };
 export default Signup;

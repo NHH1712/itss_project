@@ -1,6 +1,7 @@
 import {Link} from "react-router-dom"
 const Login = () => {
   return (
+    <form>
     <div className="h-screen w-screen bg-[#e7e5e4] flex justify-center items-center">
       <div className="bg-white w-3/5 h-4/5 rounded">
         <div className="font-bold text-3xl text-center mt-16 mb-8">LOGIN</div>
@@ -35,6 +36,7 @@ const Login = () => {
           </div>
       </div>
     </div>
+    </form>
   );
 };
 export default Login;
