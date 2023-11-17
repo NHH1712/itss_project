@@ -1,14 +1,6 @@
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
-import { useState } from "react";
 const Home = () => {
-  const [todos, setTodos] = useState([])
-  const fetchTodos = async () => {
-    const response = await fetch("http://localhost:8000/todo")
-    const todos = await response.json()
-    setTodos(todos.data)
-  }
-  console.log(todos)
   return (
     <div className="h-screen w-screen bg-gray-100 overflow-y-auto ">
       <Header />
