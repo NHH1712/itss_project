@@ -33,7 +33,6 @@ app.add_middleware(DBSessionMiddleware, db_url=os.environ['DATABASE_URL'])
 async def root():
     return {"message": "hello world"}
 
-
 # To run locally
 if __name__ == '__main__':
     uvicorn.run(app, host='0.0.0.0', port=8000)

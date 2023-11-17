@@ -5,26 +5,6 @@ from sqlalchemy.sql import func
 
 Base  = declarative_base()
 
-# class Book(Base):
-#     __tablename__ = 'book'
-#     id  = Column(Integer, primary_key=True, index=True)
-#     title = Column(String)
-#     rating = Column(Float)
-#     time_created = Column(DateTime(timezone=True), server_default=func.now())
-#     time_updated = Column(DateTime(timezone=True), onupdate=func.now())
-#     author_id = Column(Integer, ForeignKey('author.id'))
-
-#     author = relationship('Author')
-
-
-# class Author(Base):
-#     __tablename__ = 'author'
-#     id = Column(Integer, primary_key=True)
-#     name = Column(String)
-#     age = Column(Integer)
-#     time_created = Column(DateTime(timezone=True), server_default=func.now())
-#     time_updated = Column(DateTime(timezone=True), onupdate=func.now())
-
 class PostTag(Base):
     __tablename__ = 'post_tag'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -39,8 +19,8 @@ class CommentVote(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     comment_id = Column(Integer, ForeignKey('comments.id'))
-    time_created = Column(DateTime(timezone=True), server_default=func.now())
-    time_updated = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     user = relationship('Users', back_populates='comment_vote')
     comment = relationship('Comments', back_populates='comment_vote')
@@ -52,8 +32,8 @@ class Posts(Base):
     title = Column(String)
     description = Column(String)
     image_url = Column(String)
-    time_created = Column(DateTime(timezone=True), server_default=func.now())
-    time_updated = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     user = relationship('Users', back_populates='posts')
     post_tag = relationship('PostTag', back_populates='post')
@@ -72,8 +52,8 @@ class PostVote(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     post_id = Column(Integer, ForeignKey('posts.id'))
-    time_created = Column(DateTime(timezone=True), server_default=func.now())
-    time_updated = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     user = relationship('Users', back_populates='post_vote')
     post = relationship('Posts', back_populates='post_vote')
@@ -84,8 +64,8 @@ class Comments(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     post_id = Column(Integer, ForeignKey('posts.id'))
     content = Column(String)
-    time_created = Column(DateTime(timezone=True), server_default=func.now())
-    time_updated = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     user = relationship('Users', back_populates='comments')
     post = relationship('Posts', back_populates='comments')
@@ -101,8 +81,8 @@ class Users(Base):
     grade = Column(String)
     avatar_url = Column(String)
     cover_image_url = Column(String)
-    time_created = Column(DateTime(timezone=True), server_default=func.now())
-    time_updated = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     posts = relationship('Posts', back_populates='user')
     post_vote = relationship('PostVote', back_populates='user')
