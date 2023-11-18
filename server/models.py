@@ -8,8 +8,8 @@ Base  = declarative_base()
 class PostTag(Base):
     __tablename__ = 'post_tag'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    post_id = Column(Integer, ForeignKey('posts.id'))
-    tag_id = Column(Integer, ForeignKey('tags.id'))
+    post_id = Column(Integer, ForeignKey('posts.id'), nullable=False)
+    tag_id = Column(Integer, ForeignKey('tags.id'), nullable=False)
 
     post = relationship('Posts', back_populates='post_tag')
     tag = relationship('Tags', back_populates='post_tag')
@@ -17,8 +17,8 @@ class PostTag(Base):
 class CommentVote(Base):
     __tablename__ = 'comment_vote'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    comment_id = Column(Integer, ForeignKey('comments.id'))
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    comment_id = Column(Integer, ForeignKey('comments.id'), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -28,9 +28,9 @@ class CommentVote(Base):
 class Posts(Base):
     __tablename__ = 'posts'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    title = Column(String)
-    description = Column(String)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    title = Column(String, nullable=False)
+    description = Column(String, nullable=False)
     image_url = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -43,15 +43,15 @@ class Posts(Base):
 class Tags(Base):
     __tablename__ = 'tags'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String)
+    name = Column(String, nullable=False)
 
     post_tag = relationship('PostTag', back_populates='tag')
 
 class PostVote(Base):
     __tablename__ = 'post_vote'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    post_id = Column(Integer, ForeignKey('posts.id'))
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    post_id = Column(Integer, ForeignKey('posts.id'), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -61,9 +61,9 @@ class PostVote(Base):
 class Comments(Base):
     __tablename__ = 'comments'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    post_id = Column(Integer, ForeignKey('posts.id'))
-    content = Column(String)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    post_id = Column(Integer, ForeignKey('posts.id'), nullable=False)
+    content = Column(String, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -74,11 +74,11 @@ class Comments(Base):
 class Users(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String)
-    username = Column(String)
-    password = Column(String)
-    classname = Column(String)
-    grade = Column(String)
+    name = Column(String, nullable=False)
+    username = Column(String, nullable=False)
+    password = Column(String, nullable=False)
+    classname = Column(String, nullable=False)
+    grade = Column(String, nullable=False)
     avatar_url = Column(String)
     cover_image_url = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
