@@ -1,6 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi_sqlalchemy import DBSessionMiddleware, db
+from fastapi.middleware.cors import CORSMiddleware
 
 from schema import PostTag as SchemaPostTag
 from schema import CommentVote as SchemaCommentVote
@@ -28,6 +29,19 @@ app = FastAPI()
 
 # to avoid csrftokenError
 app.add_middleware(DBSessionMiddleware, db_url=os.environ['DATABASE_URL'])
+origins = [
+    "http://localhost:5173",
+    "localhost:5173"
+]
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 @app.get("/")
 async def root():
@@ -67,6 +81,10 @@ async def delete_user(user_id: int):
     db.session.commit()
     return {'message': 'User has been deleted successfully'}
 
+@app.get('/user/{username}')
+async def get_user_by_username(username: str):
+    user = db.session.query(ModelUsers).filter(ModelUsers.username == username).first()
+    return user
 # Tags crud 
 @app.get('/tags/')
 async def get_tags():
