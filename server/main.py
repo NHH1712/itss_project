@@ -164,8 +164,9 @@ async def post_by_user_id(user_id: int, post: SchemaPosts, post_tags: List[Schem
     db.session.commit()
     return new_post
 
+
 @app.put('/posts/{post_id}', response_model=SchemaPosts)
-async def update_post(post_id: int, post: SchemaPosts):
+async def update_post(post_id: int, post: SchemaPosts, post_tags: List[SchemaPostTag]):
     db_post = db.session.query(ModelPosts).filter(ModelPosts.id == post_id).first()
     db_post.user_id = post.user_id
     db_post.title = post.title
@@ -173,6 +174,25 @@ async def update_post(post_id: int, post: SchemaPosts):
     db_post.image_url = post.image_url
     db.session.commit()
     return db_post
+
+@app.put('/posts/change/{post_id}', response_model=SchemaPosts)
+async def update_post_change(post_id: int, post: SchemaPosts, post_tags: List[SchemaPostTag]):
+    db_post = db.session.query(ModelPosts).filter(ModelPosts.id == post_id).first()
+    db_post.user_id = post.user_id
+    db_post.title = post.title
+    db_post.description = post.description
+    db_post.image_url = post.image_url
+    db.session.commit()
+
+    db.session.query(ModelPostTag).filter(ModelPostTag.post_id == post_id).delete()
+
+    for tag in post_tags:
+        post_tag = ModelPostTag(post_id=db_post.id, tag_id=tag.tag_id)
+        db.session.add(post_tag)
+
+    db.session.commit()
+    return db_post
+
 @app.delete('/posts/{post_id}')
 async def delete_post(post_id: int):
     db_post = db.session.query(ModelPosts).filter(ModelPosts.id == post_id).first()
