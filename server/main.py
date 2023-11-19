@@ -125,6 +125,10 @@ async def get_posts():
 async def get_post(post_id: int):
     post = db.session.query(ModelPosts).filter(ModelPosts.id == post_id).first()
     return post
+@app.get('/posts/user/{user_id}')
+async def get_post_by_user_id(user_id: int):
+    post = db.session.query(ModelPosts).filter(ModelPosts.user_id == user_id).all()
+    return post
 @app.post('/posts/', response_model=SchemaPosts)
 async def post(post: SchemaPosts):
     db_post = ModelPosts(user_id=post.user_id, title=post.title, description=post.description, image_url=post.image_url)

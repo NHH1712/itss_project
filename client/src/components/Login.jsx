@@ -1,16 +1,18 @@
 import {Link, useNavigate} from "react-router-dom"
 import { useState } from 'react';
+// import { useAuth } from "../contexts/AuthContext";
 const Login = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const navigateTo = useNavigate();
-  const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-  });
+  // const authInfo = useAuth();
+  // const { login } = authInfo ? authInfo : { login: (values) => Boolean };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData)
+    // login({ username, password });
+    console.log(username, password);
     try {
-      const response = await fetch(`http://localhost:8000/login/?username=${formData.username}&password=${formData.password}`, {
+      const response = await fetch(`http://localhost:8000/login/?username=${username}&password=${password}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -43,8 +45,8 @@ const Login = () => {
               type="text"
               placeholder="Enter your Username"
               className="ml-2 flex-grow outline-none"
-              value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
           </div>
         </div>
@@ -55,8 +57,8 @@ const Login = () => {
               type="password"
               placeholder="Enter your Password"
               className="ml-2 flex-grow outline-none"
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
         </div>
