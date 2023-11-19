@@ -3,7 +3,10 @@ import Header from "../components/Header";
 import { useState, useEffect } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "../contexts/AuthContext";
-
+import {
+  DeleteOutlined,
+  EditOutlined
+} from '@ant-design/icons';
 const Home = () => {
   const navigate = useNavigate();
   const authInfo = useAuth();
@@ -158,6 +161,10 @@ const Home = () => {
                         {tag.tag.name}
                       </div>
                     ))}
+                  </div>
+                  <div className="flex">
+                    <button><EditOutlined/></button>
+                    <button><DeleteOutlined/></button>
                   </div>
                 </div>
                 <div className="content-post h-[60%] flex">
