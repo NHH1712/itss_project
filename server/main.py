@@ -46,7 +46,10 @@ app.add_middleware(
 @app.get("/")
 async def root():
     return {"message": "hello world"}
-
+@app.post('/login')
+async def login(username: str, password: str):
+    user = db.session.query(ModelUsers).filter(ModelUsers.username == username, ModelUsers.password == password).first()
+    return user
 # User crud
 @app.get('/users/')
 async def get_users():

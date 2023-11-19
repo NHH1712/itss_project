@@ -1,7 +1,38 @@
-import {Link} from "react-router-dom"
+import {Link, useNavigate} from "react-router-dom"
+import { useState } from 'react';
 const Login = () => {
+  const navigateTo = useNavigate();
+  const [formData, setFormData] = useState({
+    username: '',
+    password: '',
+  });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log(formData)
+    try {
+      const response = await fetch(`http://localhost:8000/login/?username=${formData.username}&password=${formData.password}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        if(data){
+          navigateTo('/');
+        }else{
+          alert('Login failed');
+        }
+      } else {
+        console.error('Login failed');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
     <div className="h-screen w-screen bg-[#e7e5e4] flex justify-center items-center">
       <div className="bg-white w-3/5 h-4/5 rounded">
         <div className="font-bold text-3xl text-center mt-16 mb-8">LOGIN</div>
@@ -12,6 +43,8 @@ const Login = () => {
               type="text"
               placeholder="Enter your Username"
               className="ml-2 flex-grow outline-none"
+              value={formData.username}
+              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
             />
           </div>
         </div>
@@ -19,9 +52,11 @@ const Login = () => {
           <p>Password</p>
           <div className="border rounded-lg py-2 flex">
             <input
-              type="text"
+              type="password"
               placeholder="Enter your Password"
               className="ml-2 flex-grow outline-none"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             />
           </div>
         </div>
