@@ -149,6 +149,13 @@ async def post(post: SchemaPosts):
     db.session.add(db_post)
     db.session.commit()
     return db_post
+@app.post('/posts/user/{user_id}', response_model=SchemaPosts)
+async def post_by_user_id(user_id: int, post: SchemaPosts):
+    post = ModelPosts(user_id=user_id, title=post.title, description=post.description, image_url=post.image_url)
+    db.session.add(post)
+    db.session.commit()
+    return post
+
 @app.put('/posts/{post_id}', response_model=SchemaPosts)
 async def update_post(post_id: int, post: SchemaPosts):
     db_post = db.session.query(ModelPosts).filter(ModelPosts.id == post_id).first()

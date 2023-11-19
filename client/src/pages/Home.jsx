@@ -1,8 +1,13 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { useState, useEffect } from "react";
 import { formatDistanceToNow } from "date-fns";
+import { useAuth } from "../contexts/AuthContext";
+
 const Home = () => {
+  const navigate = useNavigate();
+  const authInfo = useAuth();
+  const { isLoggedIn } = authInfo;
   const [posts, setPosts] = useState([]);
   useEffect(() => {
     const fetchPosts = async () => {
@@ -21,6 +26,13 @@ const Home = () => {
 
     fetchPosts();
   }, []);
+  const handleCreatePostClick = () => {
+    if (isLoggedIn) {
+      navigate("/create-post");
+    } else {
+      alert("Cannot create post. User is not logged in.");
+    }
+  };
   return (
     <div className="h-screen w-screen bg-gray-100 overflow-y-auto ">
       <Header />
@@ -29,12 +41,13 @@ const Home = () => {
           <div className="sticky z-10 top-[72px]">
             <div className="h-14 bg-white p-2 mb-4 flex">
               <img src="/social-media.png" alt="icon" className="mx-2"></img>
-              <Link
+              <button
+                style={{borderRadius: '0px'}}
                 className="w-full border border-gray-300 text-gray-400 flex items-center p-2"
-                to="/create-post"
+                onClick={handleCreatePostClick}
               >
                 Create Post
-              </Link>
+              </button>
             </div>
           </div>
 
@@ -122,8 +135,8 @@ const Home = () => {
                           <div className="mr-2">
                             <img src="/social-media.png" alt="cmt icon" width={32} height={32}></img>
                           </div>
-                          <div>{comment.user.name}</div>
-                          <div className="mr-2">
+                          <div className="flex items-center justify-center font-bold">{comment.user.name}</div>
+                          <div className="mr-2 ml-2 font-light text-xs flex items-center justify-center">
                             {formatDistanceToNow(new Date(comment.created_at))}{" "}
                             ago
                           </div>

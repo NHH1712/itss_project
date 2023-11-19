@@ -1,16 +1,14 @@
 import {Link, useNavigate} from "react-router-dom"
 import { useState } from 'react';
-// import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigateTo = useNavigate();
-  // const authInfo = useAuth();
-  // const { login } = authInfo ? authInfo : { login: (values) => Boolean };
+  const authInfo = useAuth();
+  const { login } = authInfo ? authInfo : { login: (values) => Boolean };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // login({ username, password });
-    console.log(username, password);
     try {
       const response = await fetch(`http://localhost:8000/login/?username=${username}&password=${password}`, {
         method: 'POST',
@@ -20,8 +18,9 @@ const Login = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
         if(data){
+          login({ username, password });
           navigateTo('/');
         }else{
           alert('Login failed');
