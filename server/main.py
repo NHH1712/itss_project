@@ -154,6 +154,10 @@ async def post_by_user_id(user_id: int, post: SchemaPosts):
     post = ModelPosts(user_id=user_id, title=post.title, description=post.description, image_url=post.image_url)
     db.session.add(post)
     db.session.commit()
+
+    post_tag = ModelPostTag(post_id=new_post.id, tag_id=post.tag_id)
+    db.session.add(post_tag)
+    db.session.commit()
     return post
 
 @app.put('/posts/{post_id}', response_model=SchemaPosts)
