@@ -76,9 +76,9 @@ const Home = () => {
               </div>
             </div>
           </div>
-          <div className="post-view bg-white mt-4 z-0">
-            {posts.map((post) => (
-              <div key={post.id} className="h-[60vh] p-4">
+          {posts.map((post) => (
+          <div key={post.id} className="post-view bg-white mt-4 z-0">
+              <div className="h-[60vh] p-4 pb-4">
                 <div className="header-post flex items-center h-[10%]">
                   <div className="user-icon mr-2">
                     <img
@@ -158,8 +158,8 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-            ))}
           </div>
+          ))}
         </div>
         <div className="recent-post w-1/3 bg-white p-4 h-[40vh] sticky top-[72px]">
           <div>

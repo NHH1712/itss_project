@@ -1,12 +1,30 @@
 import { Link } from "react-router-dom";
 import SearchBar from "./layouts/SearchBar";
 import { useAuth } from "../contexts/AuthContext";
+import { useEffect, useState } from "react";
 const Header = () => {
   const authInfo = useAuth();
-  const { isLoggedIn, logout } = authInfo
+  const {user, isLoggedIn, logout } = authInfo
     ? authInfo
     : { isLoggedIn: false, logout: () => {} };
-
+  const [userData, setUserData] = useState()
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/user/${user.name}`)
+        if (response.ok) {
+          const data = await response.json();
+          setUserData(data);
+        } else {
+          console.error("Failed to fetch user");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+    fetchUser();
+  }
+  , [isLoggedIn]);
   return (
     <>
       <div className="bg-white h-14 flex items-center sticky top-0">
@@ -28,12 +46,23 @@ const Header = () => {
         <SearchBar />
         <div className="flex items-center text-center w-1/6">
           {isLoggedIn ? (
-            <button
-              className="bg-[#0e64d2] text-white rounded-lg px-4 py-2"
-              onClick={logout}
-            >
-              Logout
-            </button>
+            <div className="flex items-center justify-center">
+              <img
+                // src={userData?.avatar}
+                src="/social-media.png"
+                alt="user"
+                width={30}
+                height={30}
+                className="mr-2"
+              ></img>
+              <span className="font-bold mr-4">{userData?.name}</span>
+              <button
+                className="bg-[#0e64d2] text-white rounded-lg px-4 py-2"
+                onClick={logout}
+              >
+                Logout
+              </button>
+            </div>
           ) : (
             <Link
               to="/login"
