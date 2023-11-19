@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi_sqlalchemy import DBSessionMiddleware, db
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import joinedload
-
+from sqlalchemy import func, select
 from schema import PostTag as SchemaPostTag
 from schema import CommentVote as SchemaCommentVote
 from schema import Posts as SchemaPosts
@@ -125,9 +125,13 @@ async def get_posts():
         .join(ModelUsers, ModelUsers.id == ModelPosts.user_id)
         .outerjoin(ModelPostVote, ModelPostVote.post_id == ModelPosts.id)
         .outerjoin(ModelComments, ModelComments.post_id == ModelPosts.id)
+        .outerjoin(ModelPostTag, ModelPostTag.post_id == ModelPosts.id)
+        .outerjoin(ModelTags, ModelTags.id == ModelPostTag.tag_id)
         .options(joinedload(ModelPosts.user))
         .options(joinedload(ModelPosts.post_vote))
-        .options(joinedload(ModelPosts.comments))
+        .options(joinedload(ModelPosts.comments).joinedload(ModelComments.user))
+        .options(joinedload(ModelPosts.post_tag).joinedload(ModelPostTag.tag))
+        .options(joinedload(ModelPosts.comments).joinedload(ModelComments.comment_vote))
         .all()
     )
     return posts
