@@ -1,14 +1,34 @@
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { useState, useEffect } from "react";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, set } from "date-fns";
 import { useAuth } from "../contexts/AuthContext";
 
 const Home = () => {
   const navigate = useNavigate();
   const authInfo = useAuth();
-  const { isLoggedIn } = authInfo;
+  const { user, isLoggedIn } = authInfo;
+  const [dataUser, setDataUser] = useState();
   const [posts, setPosts] = useState([]);
+  // const [content, setContent] = useState("");
+  const [contentMap, setContentMap] = useState({});
+  const [postID, setPostID] = useState("");
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/user/${user.name}`);
+        if (response.ok) {
+          const data = await response.json();
+          setDataUser(data);
+        } else {
+          console.error("Failed to fetch user");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+    fetchUser();
+  }, []);
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -33,6 +53,37 @@ const Home = () => {
       alert("Cannot create post. User is not logged in.");
     }
   };
+  const handleContentChange = (postId) => (e) => {
+    const newContentMap = { ...contentMap, [postId]: e.target.value };
+    setContentMap(newContentMap);
+    setPostID(postId);
+    console.log(contentMap);
+  };
+  const handleSubmit = async (e) => {
+    const content = contentMap[postID];
+    e.preventDefault();
+    try {
+      const response = await fetch(`http://localhost:8000/comments/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          content: content,
+          user_id: dataUser.id,
+          post_id: postID,
+        })
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+      } else {
+        console.error('Failed to create comment');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
   return (
     <div className="h-screen w-screen bg-gray-100 overflow-y-auto ">
       <Header />
@@ -42,7 +93,7 @@ const Home = () => {
             <div className="h-14 bg-white p-2 mb-4 flex">
               <img src="/social-media.png" alt="icon" className="mx-2"></img>
               <button
-                style={{borderRadius: '0px'}}
+                style={{ borderRadius: "0px" }}
                 className="w-full border border-gray-300 text-gray-400 flex items-center p-2"
                 onClick={handleCreatePostClick}
               >
@@ -77,7 +128,7 @@ const Home = () => {
             </div>
           </div>
           {posts.map((post) => (
-          <div key={post.id} className="post-view bg-white mt-4 z-0">
+            <div key={post.id} className="post-view bg-white mt-4 z-0">
               <div className="h-[60vh] p-4 pb-4">
                 <div className="header-post flex items-center h-[10%]">
                   <div className="user-icon mr-2">
@@ -133,32 +184,57 @@ const Home = () => {
                       <div key={comment.id} className="comment-item ml-4">
                         <div className="comment header flex">
                           <div className="mr-2">
-                            <img src="/social-media.png" alt="cmt icon" width={32} height={32}></img>
+                            <img
+                              src="/social-media.png"
+                              alt="cmt icon"
+                              width={32}
+                              height={32}
+                            ></img>
                           </div>
-                          <div className="flex items-center justify-center font-bold">{comment.user.name}</div>
+                          <div className="flex items-center justify-center font-bold">
+                            {comment.user.name}
+                          </div>
                           <div className="mr-2 ml-2 font-light text-xs flex items-center justify-center">
                             {formatDistanceToNow(new Date(comment.created_at))}{" "}
                             ago
                           </div>
                         </div>
-                        <div className="comment content mr-2 border-dotted border-l-2 border-gray-400 pl-4">{comment.content}</div>
+                        <div className="comment content mr-2 border-dotted border-l-2 border-gray-400 pl-4">
+                          {comment.content}
+                        </div>
                         <div className="vote font-bold">
                           {post.comments.comment_vote?.length ?? 0}
                         </div>
                       </div>
                     ))}
                     <div className="text comment flex mt-4 ml-4">
-                      <img src="/social-media.png" alt="cmt icon" width={32} height={32}></img>
-                      <input className="p-1 border border-gray-400 mx-2 rounded-lg w-[60vh]" placeholder="Send message"></input>
-                      <button style={{height: '32px'}}
-                      className="flex items-center">
+                      <img
+                        src="/social-media.png"
+                        alt="cmt icon"
+                        width={32}
+                        height={32}
+                      ></img>
+                      <input
+                        type="text"
+                        key={post.id}
+                        className="p-1 border border-gray-400 mx-2 rounded-lg w-[60vh]"
+                        placeholder="Send message"
+                        id={post.id}
+                        value={contentMap[post.id] || ''}
+                        onChange={handleContentChange(post.id)}
+                      ></input>
+                      <button
+                        style={{ height: "32px" }}
+                        className="flex items-center"
+                        onClick={handleSubmit}
+                      >
                         <img src="/send.png" alt="send cmt"></img>
                       </button>
                     </div>
                   </div>
                 </div>
               </div>
-          </div>
+            </div>
           ))}
         </div>
         <div className="recent-post w-1/3 bg-white p-4 h-[40vh] sticky top-[72px]">
