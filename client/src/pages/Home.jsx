@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { useState, useEffect } from "react";
-import { formatDistanceToNow, set } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "../contexts/AuthContext";
 
 const Home = () => {
@@ -237,11 +237,36 @@ const Home = () => {
             </div>
           ))}
         </div>
-        <div className="recent-post w-1/3 bg-white p-4 h-[40vh] sticky top-[72px]">
+        <div className="recent-post w-1/3 bg-white p-4 h-screen">
           <div>
             <p className="font-bold text-black">RECENT POST</p>
           </div>
+          {isLoggedIn && (
+            <div>
+              {posts.map((post) => (
+                <div key={post.id} className="post-item flex mt-4 h-[15vh]">
+                  <div className="">
+                    <div className="flex">
+                      <img src="/social-media.png" alt="user icon" width={24} height={24}></img>
+                      <div className="ml-2">{post.user.name}</div>
+                    </div>
+                    <div className="mt-1">
+                      <div className="font-bold">{post.title}</div>
+                      <div className="truncate w-[250px]">{post.description}</div>
+                      <div className="flex justify-end">
+                        <div className="text-xs mr-1">{post.comments?.length ?? 0} Comments - </div>
+                        <div className="text-xs">Posted at {formatDistanceToNow(new Date(post.created_at))}{" "}
+                        ago</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+              }
+            </div>
+          )}
         </div>
+        
       </div>
     </div>
   );
