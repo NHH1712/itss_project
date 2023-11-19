@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import { useState, useEffect } from "react";
+import { formatDistanceToNow } from "date-fns";
 const Home = () => {
   const [posts, setPosts] = useState([]);
   useEffect(() => {
@@ -70,20 +71,19 @@ const Home = () => {
                     <img src="/social-media.png" alt="icon" width={20} height={20}></img>
                   </div>
                   <div className="user-name font-medium text-base mr-2">
-                    <div>{post.user_id}</div>
+                    <div>{post.user.name}</div>
                   </div>
                   <div className="time-post font-light text-xs mr-2">
-                    <div>{post.created_at}</div>
+                    {/* <div>Posted at {post.created_at}</div> */}
+                    <div>Posted at {formatDistanceToNow(new Date(post.created_at))} ago</div>
                   </div>
                   <div className="post-tag flex mr-2">
-                    <img src="/social-media.png" alt="test post" width={20} height={20}></img>
-                    <img src="/social-media.png" alt="test post" width={20} height={20}></img>
-                    <img src="/social-media.png" alt="test post" width={20} height={20}></img>
+                    tags
                   </div>
                 </div>
               <div className="content-post h-[65%] flex">
-                <div className="w-[10%] mr-6">
-                  updown
+                <div className="w-[5%] mr-6 flex justify-center font-bold">
+                  +{post.vote?.length ?? 0}
                 </div>
                 <div className="w-[85%]">
                   <div className="post-title font-bold">

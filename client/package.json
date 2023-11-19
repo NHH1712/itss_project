@@ -12,6 +12,7 @@
   "dependencies": {
     "antd": "^5.11.2",
     "autoprefixer": "^10.4.16",
+    "date-fns": "^2.30.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.18.0"

@@ -2,6 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi_sqlalchemy import DBSessionMiddleware, db
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import joinedload
 
 from schema import PostTag as SchemaPostTag
 from schema import CommentVote as SchemaCommentVote
@@ -119,8 +120,17 @@ async def delete_tag(tag_id: int):
 # Posts crud
 @app.get('/posts/')
 async def get_posts():
-    post = db.session.query(ModelPosts).all()
-    return post
+    posts = (
+        db.session.query(ModelPosts)
+        .join(ModelUsers, ModelUsers.id == ModelPosts.user_id)
+        .outerjoin(ModelPostVote, ModelPostVote.post_id == ModelPosts.id)
+        .outerjoin(ModelComments, ModelComments.post_id == ModelPosts.id)
+        .options(joinedload(ModelPosts.user))
+        .options(joinedload(ModelPosts.post_vote))
+        .options(joinedload(ModelPosts.comments))
+        .all()
+    )
+    return posts
 @app.get('/posts/{post_id}')
 async def get_post(post_id: int):
     post = db.session.query(ModelPosts).filter(ModelPosts.id == post_id).first()
