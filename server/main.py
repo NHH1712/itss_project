@@ -23,6 +23,8 @@ from models import Users as ModelUsers
 import os
 from dotenv import load_dotenv
 
+from typing import List
+
 load_dotenv('.env')
 
 
@@ -150,15 +152,17 @@ async def post(post: SchemaPosts):
     db.session.commit()
     return db_post
 @app.post('/posts/user/{user_id}', response_model=SchemaPosts)
-async def post_by_user_id(user_id: int, post: SchemaPosts):
+async def post_by_user_id(user_id: int, post: SchemaPosts, post_tags: List[SchemaPostTag]):
     new_post = ModelPosts(user_id=user_id, title=post.title, description=post.description, image_url=post.image_url)
-    db.session.add(post)
+    db.session.add(new_post)
     db.session.commit()
 
-    post_tag = ModelPostTag(post_id=new_post.id, tag_id=post.tag_id)
-    db.session.add(post_tag)
+    for tag in post_tags:
+        post_tag = ModelPostTag(post_id=new_post.id, tag_id=tag.tag_id)
+        db.session.add(post_tag)
+    
     db.session.commit()
-    return post
+    return new_post
 
 @app.put('/posts/{post_id}', response_model=SchemaPosts)
 async def update_post(post_id: int, post: SchemaPosts):
