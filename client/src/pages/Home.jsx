@@ -1,9 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { useState, useEffect } from "react";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, set } from "date-fns";
 import { useAuth } from "../contexts/AuthContext";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { Modal } from 'antd';
 const Home = () => {
   const navigate = useNavigate();
   const authInfo = useAuth();
@@ -86,14 +87,22 @@ const Home = () => {
   const handleEditClick = (postId) => {
     navigate(`/update-post/${postId}`);
   };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+    setConfirmDelete(true);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    setConfirmDelete(false);
+  };
   const handleDelete = async (postId) => {
-    const shouldDelete = window.confirm(
-      "Are you sure you want to delete this post?"
-    );
-
-    if (!shouldDelete) {
-      return; 
-    }
+    showModal();
+    if(!confirmDelete) return;
     try {
       const response = await fetch(`http://127.0.0.1:8000/posts/${postId}`, {
         method: "DELETE",
@@ -199,6 +208,22 @@ const Home = () => {
                         <button onClick={() => handleDelete(post.id)}>
                           <DeleteOutlined />
                         </button>
+                        <Modal 
+                          title="Are you sure about that" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}
+                          okButtonProps={{ style: { background: '#DC2626', borderColor: '#FFFFFF' } }}
+                          cancelButtonProps={{ style: { background: '#e2e2e2', borderColor: '#e2e2e2' } }}
+                        >
+                          <div className="bg-gray-500 border mt-1 mb-4"></div>
+                          <div className="flex items-center justify-center text-center">
+                            <div className="flex flex-col items-center">
+                              <img src="/warning.png" alt="Warning"></img>
+                              <span className="font-bold mt-2">
+                                Do you really want to delete this post? <br />
+                                This process cannot be redone
+                              </span>
+                            </div>
+                          </div>
+                        </Modal>
                       </>
                     )}
                   </div>
