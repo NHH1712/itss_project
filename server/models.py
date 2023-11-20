@@ -8,7 +8,7 @@ Base  = declarative_base()
 class PostTag(Base):
     __tablename__ = 'post_tag'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    post_id = Column(Integer, ForeignKey('posts.id'), nullable=False)
+    post_id = Column(Integer, ForeignKey('posts.id', ondelete='CASCADE'), nullable=False)
     tag_id = Column(Integer, ForeignKey('tags.id'), nullable=False)
 
     post = relationship('Posts', back_populates='post_tag')
@@ -36,7 +36,7 @@ class Posts(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     user = relationship('Users', back_populates='posts')
-    post_tag = relationship('PostTag', back_populates='post')
+    post_tag = relationship('PostTag', back_populates='post', cascade='all, delete')
     post_vote = relationship('PostVote', back_populates='post')
     comments = relationship('Comments', back_populates='post')
 

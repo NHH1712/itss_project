@@ -14,7 +14,7 @@ function App() {
           <Route path="/signup" element={<Signup />} exact />
           <Route path="/" element={<Home />} exact />
           <Route path="/create-post" element={<CreatePost />} exact />
-          <Route path="/update-post" element={<UpdatePost />} exact />
+          <Route path="/update-post/:postId" element={<UpdatePost />} exact />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

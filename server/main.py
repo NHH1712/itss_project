@@ -139,7 +139,8 @@ async def get_posts():
     return posts
 @app.get('/posts/{post_id}')
 async def get_post(post_id: int):
-    post = db.session.query(ModelPosts).filter(ModelPosts.id == post_id).first()
+    # post = db.session.query(ModelPosts).filter(ModelPosts.id == post_id).first()
+    post = db.session.query(ModelPosts).options(joinedload(ModelPosts.post_tag).joinedload(ModelPostTag.tag)).filter(ModelPosts.id == post_id).first()
     return post
 @app.get('/posts/user/{user_id}')
 async def get_post_by_user_id(user_id: int):
@@ -160,7 +161,6 @@ async def post_by_user_id(user_id: int, post: SchemaPosts, post_tags: List[Schem
     for tag in post_tags:
         post_tag = ModelPostTag(post_id=new_post.id, tag_id=tag.tag_id)
         db.session.add(post_tag)
-    
     db.session.commit()
     return new_post
 

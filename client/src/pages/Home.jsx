@@ -3,17 +3,13 @@ import Header from "../components/Header";
 import { useState, useEffect } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "../contexts/AuthContext";
-import {
-  DeleteOutlined,
-  EditOutlined
-} from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 const Home = () => {
   const navigate = useNavigate();
   const authInfo = useAuth();
   const { user, isLoggedIn } = authInfo;
   const [dataUser, setDataUser] = useState();
   const [posts, setPosts] = useState([]);
-  // const [content, setContent] = useState("");
   const [contentMap, setContentMap] = useState({});
   const [postID, setPostID] = useState("");
   useEffect(() => {
@@ -66,27 +62,55 @@ const Home = () => {
     const content = contentMap[postID];
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:8000/comments/`, {
-        method: 'POST',
+      const response = await fetch(`http://127.0.0.1:8000/comments/`, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           content: content,
           user_id: dataUser.id,
           post_id: postID,
-        })
+        }),
       });
       if (response.ok) {
         const data = await response.json();
         console.log(data);
       } else {
-        console.error('Failed to create comment');
+        console.error("Failed to create comment");
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
-  }
+  };
+  const handleEditClick = (postId) => {
+    navigate(`/update-post/${postId}`);
+  };
+  const handleDelete = async (postId) => {
+    const shouldDelete = window.confirm(
+      "Are you sure you want to delete this post?"
+    );
+
+    if (!shouldDelete) {
+      return; 
+    }
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/posts/${postId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        console.log("Post deleted successfully");
+      } else {
+        console.error("Delete failed");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   return (
     <div className="h-screen w-screen bg-gray-100 overflow-y-auto ">
       <Header />
@@ -163,8 +187,20 @@ const Home = () => {
                     ))}
                   </div>
                   <div className="flex">
-                    <button><EditOutlined/></button>
-                    <button><DeleteOutlined/></button>
+                    {isLoggedIn && post.user_id === dataUser?.id && (
+                      <>
+                        <button
+                          onClick={() =>
+                            handleEditClick(post.id, post.post_tag)
+                          }
+                        >
+                          <EditOutlined />
+                        </button>
+                        <button onClick={() => handleDelete(post.id)}>
+                          <DeleteOutlined />
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
                 <div className="content-post h-[60%] flex">
@@ -227,7 +263,7 @@ const Home = () => {
                         className="p-1 border border-gray-400 mx-2 rounded-lg w-[60vh]"
                         placeholder="Send message"
                         id={post.id}
-                        value={contentMap[post.id] || ''}
+                        value={contentMap[post.id] || ""}
                         onChange={handleContentChange(post.id)}
                       ></input>
                       <button
@@ -254,26 +290,35 @@ const Home = () => {
                 <div key={post.id} className="post-item flex mt-4 h-[15vh]">
                   <div className="">
                     <div className="flex">
-                      <img src="/social-media.png" alt="user icon" width={24} height={24}></img>
+                      <img
+                        src="/social-media.png"
+                        alt="user icon"
+                        width={24}
+                        height={24}
+                      ></img>
                       <div className="ml-2">{post.user.name}</div>
                     </div>
                     <div className="mt-1">
                       <div className="font-bold">{post.title}</div>
-                      <div className="truncate w-[250px]">{post.description}</div>
+                      <div className="truncate w-[250px]">
+                        {post.description}
+                      </div>
                       <div className="flex justify-end">
-                        <div className="text-xs mr-1">{post.comments?.length ?? 0} Comments - </div>
-                        <div className="text-xs">Posted at {formatDistanceToNow(new Date(post.created_at))}{" "}
-                        ago</div>
+                        <div className="text-xs mr-1">
+                          {post.comments?.length ?? 0} Comments -{" "}
+                        </div>
+                        <div className="text-xs">
+                          Posted at{" "}
+                          {formatDistanceToNow(new Date(post.created_at))} ago
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              ))
-              }
+              ))}
             </div>
           )}
         </div>
-        
       </div>
     </div>
   );
