@@ -1,23 +1,23 @@
-import { Link, useNavigate } from "react-router-dom";
-import Header from "../components/Header";
-import { useState, useEffect } from "react";
-import { formatDistanceToNow } from "date-fns";
+import Header from "./Header";
 import { useAuth } from "../contexts/AuthContext";
+import { useEffect, useState } from "react";
+import { formatDistanceToNow } from "date-fns";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { Modal } from 'antd';
-import { is } from "date-fns/locale";
-const Home = () => {
+import { Modal } from "antd";
+import { useNavigate } from "react-router-dom";
+const Profile = () => {
   const navigate = useNavigate();
   const authInfo = useAuth();
-  const { user, isLoggedIn } = authInfo;
+  const { user } = authInfo;
   const [dataUser, setDataUser] = useState();
   const [posts, setPosts] = useState([]);
-  const [contentMap, setContentMap] = useState({});
-  const [postID, setPostID] = useState("");
+  const handleEditClick = (postId) => {
+    navigate(`/update-post/${postId}`);
+  };
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/user/${user?.name}`);
+        const response = await fetch(`http://127.0.0.1:8000/user/${user.name}`);
         if (response.ok) {
           const data = await response.json();
           setDataUser(data);
@@ -46,52 +46,7 @@ const Home = () => {
     };
 
     fetchPosts();
-  }, []);
-  const handleCreatePostClick = () => {
-    if (isLoggedIn) {
-      navigate("/create-post");
-    } else {
-      alert("Cannot create post. User is not logged in.");
-    }
-  };
-  const handleContentChange = (postId) => (e) => {
-    const newContentMap = { ...contentMap, [postId]: e.target.value };
-    setContentMap(newContentMap);
-    setPostID(postId);
-    console.log(contentMap);
-  };
-  const handleSubmit = async (e) => {
-    if(isLoggedIn === false) {
-      alert("Cannot create comment. User is not logged in.");
-      return;
-    }
-    const content = contentMap[postID];
-    e.preventDefault();
-    try {
-      const response = await fetch(`http://127.0.0.1:8000/comments/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          content: content,
-          user_id: dataUser.id,
-          post_id: postID,
-        }),
-      });
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-      } else {
-        console.error("Failed to create comment");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-  const handleEditClick = (postId) => {
-    navigate(`/update-post/${postId}`);
-  };
+  }, [])
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const showModal = () => {
@@ -124,53 +79,21 @@ const Home = () => {
       console.error("Error:", error);
     }
   };
-
   return (
-    <div className="h-screen w-screen bg-gray-100 overflow-y-auto ">
+    <div className="w-screen h-screen bg-[#e7e5e4]">
       <Header />
-      <div className="w-3/5 flex mt-4 mx-auto ">
-        <div className="main-view-page w-2/3 mr-10">
-          <div className="sticky z-10 top-[72px]">
-            <div className="h-14 bg-white p-2 mb-4 flex">
-              <img src="/social-media.png" alt="icon" className="mx-2"></img>
-              <button
-                style={{ borderRadius: "0px" }}
-                className="w-full border border-gray-300 text-gray-400 flex items-center p-2"
-                onClick={handleCreatePostClick}
-              >
-                Create Post
-              </button>
-            </div>
+      <div className="w-4/5 mx-auto bg-white mt-6 flex h-4/5 overflow-y-auto">
+        <div className="post-view w-[70%] border-r">
+          <div className="h-14 border-b sticky top-0 z-10">
+          <div className="px-1 py-1.5 mx-10 flex items-center text-center">
+            <button className="w-fit bg-[#eeeeee] rounded-lg text-[#0079D3] font-bold text-[15px] mr-2">POST</button>
+            <button className="w-fit font-bold text-[15px] text-black opacity-50">DELETED</button>
           </div>
-
-          <div className="filter bg-white py-2 sticky top-[144px] z-10">
-            <div className="flex ml-10">
-              <div className="mr-2">
-                <button className="bg-[#eeeeee] flex items-center justify-center">
-                  <img src="/star.png" alt="Star" className="mr-2"></img>Best
-                </button>
-              </div>
-              <div className="mr-2">
-                <button className="flex items-center justify-center">
-                  <img src="/fire.png" alt="Fire" className="mr-2"></img>Hot
-                </button>
-              </div>
-              <div className="mr-2">
-                <button className="flex items-center justify-center">
-                  <img src="/thunder.png" alt="Thunder" className="mr-2"></img>
-                  New
-                </button>
-              </div>
-              <div>
-                <button className="flex items-center justify-center">
-                  <img src="/up.png" alt="Up" className="mr-2"></img>Top
-                </button>
-              </div>
-            </div>
           </div>
-          {posts.map((post) => (
-            <div key={post.id} className="post-view bg-white mt-4 z-0">
-              <div className="h-[60vh] p-4 pb-4">
+          <div className="h-full">
+            {posts.filter((post) => post.user_id === dataUser?.id).map((post) => (
+              <div key={post.id} className="post-view bg-white z-0">
+              <div className="h-[40vh] p-4 ml-6">
                 <div className="header-post flex items-center h-[10%]">
                   <div className="user-icon mr-2">
                     <img
@@ -201,7 +124,6 @@ const Home = () => {
                     ))}
                   </div>
                   <div className="flex">
-                    {isLoggedIn && post.user_id === dataUser?.id && (
                       <>
                         <button
                           onClick={() =>
@@ -230,7 +152,6 @@ const Home = () => {
                           </div>
                         </Modal>
                       </>
-                    )}
                   </div>
                 </div>
                 <div className="content-post h-[60%] flex">
@@ -295,13 +216,13 @@ const Home = () => {
                         className="p-1 border border-gray-400 mx-2 rounded-lg w-[60vh]"
                         placeholder="Send message"
                         id={post.id}
-                        value={contentMap[post.id] || ""}
-                        onChange={handleContentChange(post.id)}
+                        // value={contentMap[post.id] || ""}
+                        // onChange={handleContentChange(post.id)}
                       ></input>
                       <button
                         style={{ height: "32px" }}
                         className="flex items-center"
-                        onClick={handleSubmit}
+                        // onClick={handleSubmit}
                       >
                         <img src="/send.png" alt="send cmt"></img>
                       </button>
@@ -310,49 +231,23 @@ const Home = () => {
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-        <div className="recent-post w-1/3 bg-white p-4 h-screen">
-          <div>
-            <p className="font-bold text-black">RECENT POST</p>
+            ))}
           </div>
-          {isLoggedIn && (
-            <div>
-              {posts.map((post) => (
-                <div key={post.id} className="post-item flex mt-4 h-[15vh]">
-                  <div className="">
-                    <div className="flex">
-                      <img
-                        src="/social-media.png"
-                        alt="user icon"
-                        width={24}
-                        height={24}
-                      ></img>
-                      <div className="ml-2">{post.user.name}</div>
-                    </div>
-                    <div className="mt-1">
-                      <div className="font-bold">{post.title}</div>
-                      <div className="truncate w-[250px]">
-                        {post.description}
-                      </div>
-                      <div className="flex justify-end">
-                        <div className="text-xs mr-1">
-                          {post.comments?.length ?? 0} Comments -{" "}
-                        </div>
-                        <div className="text-xs">
-                          Posted at{" "}
-                          {formatDistanceToNow(new Date(post.created_at))} ago
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+        </div>
+        <div className="info w-[30%]">
+          <div className="h-14 border-b font-bold items-center flex sticky top-0 z-10"><span className="w-[90%] mx-auto">Info</span></div>
+          <div className="h-full">
+            <div className="w-[90%] h-[30%] mt-4 mx-auto rounded p-1 border border-gray-200">
+              <div className="mb-2">
+                <img src="/social-media.png" width={48} height={48} alt="" />
+              </div>
+              <div className="ml-2">{dataUser?.name}</div>
+              <div className="ml-2">Lớp: {dataUser?.classname} - {dataUser?.grade}</div>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
-  );
+  )
 };
-export default Home;
+export default Profile;

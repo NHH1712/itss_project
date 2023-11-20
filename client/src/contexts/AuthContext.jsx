@@ -36,6 +36,7 @@ const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("current-user");
     localStorage.removeItem("access-token");
+    navigate("/");
     setUser(null);
     setIsLoggedIn(false);
   };

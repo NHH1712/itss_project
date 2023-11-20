@@ -5,6 +5,7 @@ import Signup from "./components/Signup";
 import CreatePost from "./components/CreatePost";
 import UpdatePost from "./components/UpdatePost";
 import AuthProvider from "./contexts/AuthContext";
+import Profile from "./components/Profile";
 function App() {
   return (
     <BrowserRouter>
@@ -15,6 +16,7 @@ function App() {
           <Route path="/" element={<Home />} exact />
           <Route path="/create-post" element={<CreatePost />} exact />
           <Route path="/update-post/:postId" element={<UpdatePost />} exact />
+          <Route path="/profile" element={<Profile />} exact />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
