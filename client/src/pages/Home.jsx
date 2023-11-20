@@ -223,33 +223,35 @@ const Home = () => {
                 </div>
                 <div className="comment-post h-[30%] flex">
                   <div className="border-l-2 border-gray-400">
-                    {post.comments?.map((comment) => (
-                      <div key={comment.id} className="comment-item ml-4">
-                        <div className="comment header flex">
-                          <div className="mr-2">
-                            <img
-                              src="/social-media.png"
-                              alt="cmt icon"
-                              width={32}
-                              height={32}
-                            ></img>
+                    <div className="h-20 overflow-y-auto">
+                      {post.comments?.map((comment) => (
+                        <div key={comment.id} className="comment-item ml-4">
+                          <div className="comment header flex">
+                            <div className="mr-2">
+                              <img
+                                src="/social-media.png"
+                                alt="cmt icon"
+                                width={32}
+                                height={32}
+                              ></img>
+                            </div>
+                            <div className="flex items-center justify-center font-bold">
+                              {comment.user.name}
+                            </div>
+                            <div className="mr-2 ml-2 font-light text-xs flex items-center justify-center">
+                              {formatDistanceToNow(new Date(comment.created_at))}{" "}
+                              ago
+                            </div>
                           </div>
-                          <div className="flex items-center justify-center font-bold">
-                            {comment.user.name}
+                          <div className="comment content mr-2 border-dotted border-l-2 border-gray-400 pl-4">
+                            {comment.content}
                           </div>
-                          <div className="mr-2 ml-2 font-light text-xs flex items-center justify-center">
-                            {formatDistanceToNow(new Date(comment.created_at))}{" "}
-                            ago
+                          <div className="vote font-bold">
+                            {post.comments.comment_vote?.length ?? 0}
                           </div>
                         </div>
-                        <div className="comment content mr-2 border-dotted border-l-2 border-gray-400 pl-4">
-                          {comment.content}
-                        </div>
-                        <div className="vote font-bold">
-                          {post.comments.comment_vote?.length ?? 0}
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                     <div className="text comment flex mt-4 ml-4">
                       <img
                         src="/social-media.png"
