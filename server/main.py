@@ -3,7 +3,8 @@ from fastapi import FastAPI
 from fastapi_sqlalchemy import DBSessionMiddleware, db
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import joinedload
-from sqlalchemy import func, select
+from fastapi import HTTPException
+
 from schema import PostTag as SchemaPostTag
 from schema import CommentVote as SchemaCommentVote
 from schema import Posts as SchemaPosts
@@ -297,6 +298,13 @@ async def get_post_vote(post_vote_id: int):
     return post_vote
 @app.post('/post_vote/', response_model=SchemaPostVote)
 async def post_vote(post_vote: SchemaPostVote):
+    existing_vote = db.session.query(ModelPostVote).filter_by(
+        user_id=post_vote.user_id,
+        post_id=post_vote.post_id
+    ).first()
+
+    if existing_vote:
+        raise HTTPException(status_code=400, detail="User has already voted for this post")
     db_post_vote = ModelPostVote(user_id=post_vote.user_id, post_id=post_vote.post_id)
     db.session.add(db_post_vote)
     db.session.commit()

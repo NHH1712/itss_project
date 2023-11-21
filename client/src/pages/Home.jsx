@@ -3,9 +3,13 @@ import Header from "../components/Header";
 import { useState, useEffect } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "../contexts/AuthContext";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { Modal } from 'antd';
-import { is } from "date-fns/locale";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  UpCircleOutlined,
+  DownCircleOutlined,
+} from "@ant-design/icons";
+import { Modal } from "antd";
 const Home = () => {
   const navigate = useNavigate();
   const authInfo = useAuth();
@@ -17,7 +21,9 @@ const Home = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/user/${user?.name}`);
+        const response = await fetch(
+          `http://127.0.0.1:8000/user/${user?.name}`
+        );
         if (response.ok) {
           const data = await response.json();
           setDataUser(data);
@@ -61,7 +67,7 @@ const Home = () => {
     console.log(contentMap);
   };
   const handleSubmit = async (e) => {
-    if(isLoggedIn === false) {
+    if (isLoggedIn === false) {
       alert("Cannot create comment. User is not logged in.");
       return;
     }
@@ -107,7 +113,7 @@ const Home = () => {
   };
   const handleDelete = async (postId) => {
     showModal();
-    if(!confirmDelete) return;
+    if (!confirmDelete) return;
     try {
       const response = await fetch(`http://127.0.0.1:8000/posts/${postId}`, {
         method: "DELETE",
@@ -116,7 +122,7 @@ const Home = () => {
         },
       });
       if (response.ok) {
-        console.log("Post deleted successfully");
+        alert("Post deleted successfully");
       } else {
         console.error("Delete failed");
       }
@@ -124,7 +130,50 @@ const Home = () => {
       console.error("Error:", error);
     }
   };
-
+  const [sortCriteria, setSortCriteria] = useState("best");
+  const handleSortClick = (criteria) => {
+    setSortCriteria(criteria);
+  };
+  const handleVote = async (postId) => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/post_vote/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: dataUser.id,
+          post_id: postId,
+        }),
+      });
+      if (response.ok) {
+        window.location.reload(true)
+      } else {
+        console.error("Failed to vote");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+  const sortPosts = (posts) => {
+    switch (sortCriteria) {
+      case "best":
+        return posts.sort((a, b) => b.id - a.id);
+      case "hot":
+        return posts.sort((a, b) => b.post_vote?.length - a.post_vote?.length);
+      case "new":
+        return posts.sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        );
+      case "top":
+        return posts.sort(
+          (a, b) => (b.comments?.length ?? 0) - (a.comments?.length ?? 0)
+        );
+      default:
+        return posts;
+    }
+  };
+  const sortedPosts = sortPosts(posts);
   return (
     <div className="h-screen w-screen bg-gray-100 overflow-y-auto ">
       <Header />
@@ -146,29 +195,51 @@ const Home = () => {
           <div className="filter bg-white py-2 sticky top-[144px] z-10">
             <div className="flex ml-10">
               <div className="mr-2">
-                <button className="bg-[#eeeeee] flex items-center justify-center">
-                  <img src="/star.png" alt="Star" className="mr-2"></img>Best
+                <button
+                  className={`flex items-center justify-center ${
+                    sortCriteria === "best" ? "bg-[#eeeeee]" : ""
+                  }`}
+                  onClick={() => handleSortClick("best")}
+                >
+                  <img src="/star.png" alt="Star" className="mr-2"></img>
+                  Best
                 </button>
               </div>
               <div className="mr-2">
-                <button className="flex items-center justify-center">
-                  <img src="/fire.png" alt="Fire" className="mr-2"></img>Hot
+                <button
+                  className={`flex items-center justify-center ${
+                    sortCriteria === "hot" ? "bg-[#eeeeee]" : ""
+                  }`}
+                  onClick={() => handleSortClick("hot")}
+                >
+                  <img src="/fire.png" alt="Fire" className="mr-2"></img>
+                  Hot
                 </button>
               </div>
               <div className="mr-2">
-                <button className="flex items-center justify-center">
+                <button
+                  className={`flex items-center justify-center ${
+                    sortCriteria === "new" ? "bg-[#eeeeee]" : ""
+                  }`}
+                  onClick={() => handleSortClick("new")}
+                >
                   <img src="/thunder.png" alt="Thunder" className="mr-2"></img>
                   New
                 </button>
               </div>
               <div>
-                <button className="flex items-center justify-center">
+                <button
+                  className={`flex items-center justify-center ${
+                    sortCriteria === "top" ? "bg-[#eeeeee]" : ""
+                  }`}
+                  onClick={() => handleSortClick("top")}
+                >
                   <img src="/up.png" alt="Up" className="mr-2"></img>Top
                 </button>
               </div>
             </div>
           </div>
-          {posts.map((post) => (
+          {sortedPosts.map((post) => (
             <div key={post.id} className="post-view bg-white mt-4 z-0">
               <div className="h-[60vh] p-4 pb-4">
                 <div className="header-post flex items-center h-[10%]">
@@ -213,10 +284,23 @@ const Home = () => {
                         <button onClick={() => handleDelete(post.id)}>
                           <DeleteOutlined />
                         </button>
-                        <Modal 
-                          title="Are you sure about that" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}
-                          okButtonProps={{ style: { background: '#DC2626', borderColor: '#FFFFFF' } }}
-                          cancelButtonProps={{ style: { background: '#e2e2e2', borderColor: '#e2e2e2' } }}
+                        <Modal
+                          title="Are you sure about that"
+                          open={isModalOpen}
+                          onOk={handleOk}
+                          onCancel={handleCancel}
+                          okButtonProps={{
+                            style: {
+                              background: "#DC2626",
+                              borderColor: "#FFFFFF",
+                            },
+                          }}
+                          cancelButtonProps={{
+                            style: {
+                              background: "#e2e2e2",
+                              borderColor: "#e2e2e2",
+                            },
+                          }}
                         >
                           <div className="bg-gray-500 border mt-1 mb-4"></div>
                           <div className="flex items-center justify-center text-center">
@@ -234,8 +318,14 @@ const Home = () => {
                   </div>
                 </div>
                 <div className="content-post h-[60%] flex">
-                  <div className="w-[5%] mr-6 flex justify-center font-bold">
+                  <div className="w-[5%] mr-6 font-bold flex flex-col items-center">
+                    <button className="w-fit" onClick={() => handleVote(post.id)}>
+                      <UpCircleOutlined />
+                    </button>
                     +{post.post_vote?.length ?? 0}
+                    <button className="w-fit" onClick={() => handleVote(post.id)}>
+                      <DownCircleOutlined />
+                    </button>
                   </div>
                   <div className="w-[85%]">
                     <div className="post-title font-bold mb-1">
@@ -269,7 +359,9 @@ const Home = () => {
                               {comment.user.name}
                             </div>
                             <div className="mr-2 ml-2 font-light text-xs flex items-center justify-center">
-                              {formatDistanceToNow(new Date(comment.created_at))}{" "}
+                              {formatDistanceToNow(
+                                new Date(comment.created_at)
+                              )}{" "}
                               ago
                             </div>
                           </div>
