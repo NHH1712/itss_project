@@ -155,6 +155,27 @@ const Home = () => {
       console.error("Error:", error);
     }
   };
+  const handleCommentVote = async (commentId) => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/comment_vote/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: dataUser.id,
+          comment_id: commentId,
+        }),
+      });
+      if (response.ok) {
+        window.location.reload(true)
+      } else {
+        console.error("Failed to vote comment");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
   const sortPosts = (posts) => {
     switch (sortCriteria) {
       case "best":
@@ -368,8 +389,11 @@ const Home = () => {
                           <div className="comment content mr-2 border-dotted border-l-2 border-gray-400 pl-4">
                             {comment.content}
                           </div>
-                          <div className="vote font-bold">
-                            {post.comments.comment_vote?.length ?? 0}
+                          <div className="vote font-bold flex flex-row items-center">
+                            <button className="w-fit" onClick={() => handleCommentVote(comment.id)}><UpCircleOutlined/></button>
+                            {/* <span className="mx-2">{post.comments.comment_vote?.length ?? 0}</span> */}
+                            {post.comments.map((comment) => comment.comment_vote?.length ?? 0).reduce((acc, curr) => acc + curr, 0)}
+                            <button className="w-fit" onClick={() => handleCommentVote(comment.id)}><DownCircleOutlined/></button>
                           </div>
                         </div>
                       ))}
