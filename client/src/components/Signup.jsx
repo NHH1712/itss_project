@@ -1,7 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from 'react';
 import { Select } from 'antd';
 const Signup = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     username: '',
@@ -52,6 +53,7 @@ const Signup = () => {
       if (response.ok) {
         const data = await response.json();
         console.log(data);
+        navigate('/login');
       } else {
         console.error('Signup failed');
       }

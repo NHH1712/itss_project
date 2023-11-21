@@ -123,6 +123,7 @@ const Home = () => {
       });
       if (response.ok) {
         alert("Post deleted successfully");
+        window.location.reload(true)
       } else {
         console.error("Delete failed");
       }
