@@ -100,6 +100,7 @@ const Home = () => {
   };
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  console.log(confirmDelete)
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -122,7 +123,6 @@ const Home = () => {
         },
       });
       if (response.ok) {
-        alert("Post deleted successfully");
         window.location.reload(true)
       } else {
         console.error("Delete failed");
@@ -131,7 +131,7 @@ const Home = () => {
       console.error("Error:", error);
     }
   };
-  const [sortCriteria, setSortCriteria] = useState("best");
+  const [sortCriteria, setSortCriteria] = useState("new");
   const handleSortClick = (criteria) => {
     setSortCriteria(criteria);
   };
