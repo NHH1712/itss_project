@@ -366,8 +366,8 @@ const Home = () => {
                       {post.title}
                     </div>
                     <div className="description mb-1">{post.description}</div>
-                    <div className="image mb-1">
-                      {post.image_url && <img src={post.image_url} alt="image" width={200} height={200}/>}
+                    <div className="image mb-1 w-fit h-[100px]">
+                      {post.image_url && <img src={post.image_url} alt="image" className="max-w-full max-h-full"/>}
                       {/* {post.image_url} */}
                     </div>
                     <div className="comment flex">
