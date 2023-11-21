@@ -83,8 +83,8 @@ const Profile = () => {
     <div className="w-screen h-screen bg-[#e7e5e4]">
       <Header />
       <div className="w-4/5 mx-auto bg-white mt-6 flex h-4/5 overflow-y-auto">
-        <div className="post-view w-[70%] border-r">
-          <div className="h-14 border-b sticky top-0 z-10">
+        <div className="post-view w-[70%]">
+          <div className="h-14 border-b sticky top-0 z-10 border-r">
           <div className="px-1 py-1.5 mx-10 flex items-center text-center">
             <button className="w-fit bg-[#eeeeee] rounded-lg text-[#0079D3] font-bold text-[15px] mr-2">POST</button>
             <button className="w-fit font-bold text-[15px] text-black opacity-50">DELETED</button>
@@ -93,11 +93,11 @@ const Profile = () => {
           <div className="h-full">
             {posts.filter((post) => post.user_id === dataUser?.id).map((post) => (
               <div key={post.id} className="post-view bg-white z-0">
-              <div className="h-[40vh] p-4 ml-6">
+              <div className="h-[50vh] p-4 ml-6 border-r">
                 <div className="header-post flex items-center h-[10%]">
                   <div className="user-icon mr-2">
                     <img
-                      src="/social-media.png"
+                      // src="/social-media.png"
                       alt="icon"
                       width={20}
                       height={20}
@@ -180,7 +180,8 @@ const Profile = () => {
                           <div className="comment header flex">
                             <div className="mr-2">
                               <img
-                                src="/social-media.png"
+                                // src="/social-media.png"
+                                src={comment.user?.avatar_url ? comment.user.avatar_url : "/social-media.png"}
                                 alt="cmt icon"
                                 width={32}
                                 height={32}
@@ -239,7 +240,10 @@ const Profile = () => {
           <div className="h-full">
             <div className="w-[90%] h-[30%] mt-4 mx-auto rounded p-1 border border-gray-200">
               <div className="mb-2">
-                <img src="/social-media.png" width={48} height={48} alt="" />
+                <img 
+                  // src="/social-media.png" 
+                  src={dataUser?.avatar_url ? dataUser.avatar_url : "/social-media.png"}
+                  width={48} height={48} alt="" />
               </div>
               <div className="ml-2">{dataUser?.name}</div>
               <div className="ml-2">Lớp: {dataUser?.classname} - {dataUser?.grade}</div>

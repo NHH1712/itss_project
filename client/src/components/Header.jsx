@@ -81,13 +81,12 @@ const Header = () => {
                   <Button>
                     <Space>
                       <img
-                        // src={userData?.avatar}
-                        src="/social-media.png"
+                        src={userData?.avatar_url ? userData.avatar_url : "/social-media.png"}
                         alt="user"
                         width={24}
                         height={24}
                         className="mr-2"
-                      ></img>
+                      />
                       <span className="font-bold mr-4">{userData?.name}</span>
                       <DownOutlined />
                     </Space>

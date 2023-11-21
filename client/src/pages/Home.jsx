@@ -135,6 +135,10 @@ const Home = () => {
     setSortCriteria(criteria);
   };
   const handleVote = async (postId) => {
+    if(!isLoggedIn) {
+      alert("Cannot vote post. User is not logged in.");
+      return;
+    }
     try {
       const response = await fetch("http://127.0.0.1:8000/post_vote/", {
         method: "POST",
@@ -156,6 +160,10 @@ const Home = () => {
     }
   };
   const handleCommentVote = async (commentId) => {
+    if(!isLoggedIn) {
+      alert("Cannot vote comment. User is not logged in.");
+      return;
+    }
     try {
       const response = await fetch("http://127.0.0.1:8000/comment_vote/", {
         method: "POST",
@@ -202,7 +210,11 @@ const Home = () => {
         <div className="main-view-page w-2/3 mr-10">
           <div className="sticky z-10 top-[72px]">
             <div className="h-14 bg-white p-2 mb-4 flex">
-              <img src="/social-media.png" alt="icon" className="mx-2"></img>
+              {isLoggedIn ? (
+                <img src={dataUser?.avatar_url ? dataUser.avatar_url : "/social-media.png"} alt="icon" className="mx-2" />
+              ) : (
+                <img src="/social-media.png" alt="icon" className="mx-2" />
+              )}
               <button
                 style={{ borderRadius: "0px" }}
                 className="w-full border border-gray-300 text-gray-400 flex items-center p-2"
@@ -266,7 +278,8 @@ const Home = () => {
                 <div className="header-post flex items-center h-[10%]">
                   <div className="user-icon mr-2">
                     <img
-                      src="/social-media.png"
+                      // src="/social-media.png"
+                      src={post.user?.avatar_url ? post.user.avatar_url : "/social-media.png"}
                       alt="icon"
                       width={20}
                       height={20}
@@ -353,7 +366,10 @@ const Home = () => {
                       {post.title}
                     </div>
                     <div className="description mb-1">{post.description}</div>
-                    <div className="image mb-1">{post.image}</div>
+                    <div className="image mb-1">
+                      {post.image_url && <img src={post.image_url} alt="image" width={200} height={200}/>}
+                      {/* {post.image_url} */}
+                    </div>
                     <div className="comment flex">
                       <img src="/cmt.png"></img>
                       <span className="ml-2">
@@ -370,7 +386,8 @@ const Home = () => {
                           <div className="comment header flex">
                             <div className="mr-2">
                               <img
-                                src="/social-media.png"
+                                // src="/social-media.png"
+                                src={comment.user?.avatar_url ? comment.user.avatar_url : "/social-media.png"}
                                 alt="cmt icon"
                                 width={32}
                                 height={32}
@@ -391,7 +408,6 @@ const Home = () => {
                           </div>
                           <div className="vote font-bold flex flex-row items-center">
                             <button className="w-fit" onClick={() => handleCommentVote(comment.id)}><UpCircleOutlined/></button>
-                            {/* <span className="mx-2">{post.comments.comment_vote?.length ?? 0}</span> */}
                             {post.comments.map((comment) => comment.comment_vote?.length ?? 0).reduce((acc, curr) => acc + curr, 0)}
                             <button className="w-fit" onClick={() => handleCommentVote(comment.id)}><DownCircleOutlined/></button>
                           </div>
@@ -400,7 +416,8 @@ const Home = () => {
                     </div>
                     <div className="text comment flex mt-4 ml-4">
                       <img
-                        src="/social-media.png"
+                        // src="/social-media.png"
+                        src={dataUser?.avatar_url ? dataUser.avatar_url : "/social-media.png"}
                         alt="cmt icon"
                         width={32}
                         height={32}
@@ -439,7 +456,8 @@ const Home = () => {
                   <div className="">
                     <div className="flex">
                       <img
-                        src="/social-media.png"
+                        // src="/social-media.png"
+                        src={post.user?.avatar_url ? post.user.avatar_url : "/social-media.png"}
                         alt="user icon"
                         width={24}
                         height={24}
