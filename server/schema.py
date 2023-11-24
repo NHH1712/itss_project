@@ -11,6 +11,8 @@ class PostTag(BaseModel):
 class CommentVote(BaseModel):
     user_id:int
     comment_id:int
+    upvote: int
+    downvote: int
 
     class Config:
         orm_mode = True
@@ -20,6 +22,7 @@ class Posts(BaseModel):
     title:str
     description:str
     image_url:str
+    is_deleted: bool
 
     class Config:
         orm_mode = True
@@ -33,6 +36,8 @@ class Tags(BaseModel):
 class PostVote(BaseModel):
     user_id:int
     post_id:int
+    upvote:int
+    downvote: int
 
     class Config:
         orm_mode = True

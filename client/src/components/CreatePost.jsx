@@ -1,7 +1,8 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useState, useEffect } from "react";
-import { Select } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Select, Modal, message, Upload, Button } from 'antd';
 const CreatePost = () => {
   const navigateTo = useNavigate();
   const authInfo = useAuth();
@@ -11,7 +12,18 @@ const CreatePost = () => {
   const [tag, setTag] = useState([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [image, setImage] = useState("");
+  const [selectedImages, setSelectedImages] = useState([]);
+
+  const handleImageChange = (e) => {
+    const files = e.target.files;
+    if (files) {
+      const newImageUrls = Array.from(files).map((file) =>
+        URL.createObjectURL(file)
+      );
+
+      setSelectedImages((prevImages) => [...prevImages, ...newImageUrls]);
+    }
+  };
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -58,7 +70,7 @@ const CreatePost = () => {
             user_id: dataUser.id,
             title: title,
             description: description,
-            image_url: image
+            // image_url: fileList
           },
           post_tags: tag.map(tag_id => ({ post_id: 0, tag_id: tag_id.id }))
         })
@@ -78,7 +90,7 @@ const CreatePost = () => {
     }
   }
   return (
-    <form onSubmit={handleSubmit}>
+    <>
     <div className="h-screen w-screen bg-[#e7e5e4]">
       <div className="bg-white h-14 flex items-center justify-between">
         <div className="font-bold text-[20px] leading-5 pl-6">HEDSOCIAL</div>
@@ -87,7 +99,7 @@ const CreatePost = () => {
           <span>{dataUser?.name}</span>
         </div>
       </div>
-      <div className="create post w-3/5 h-4/5 mx-auto mt-10">
+      <div className="create post w-3/5 h-[90%] mx-auto mt-4">
         <div className="text-3xl">
           Create a new post
         </div>
@@ -107,22 +119,43 @@ const CreatePost = () => {
             <span>Title</span><span className="text-red-600 ml-1">*</span>
             <input 
               onChange = {(e) => setTitle(e.target.value)}
-              type="text" className="w-full border border-gray-300 flex items-center p-2 rounded-lg"></input>
+              type="text" className="w-full border border-gray-300 flex items-center p-2 rounded-lg" required></input>
           </div>
           <div className="h-1/2 mb-2">
             <span>Description</span><span className="text-red-600 ml-1">*</span>
             <textarea 
               onChange={(e) => setDescription(e.target.value)}
-              type="text" className="w-full border border-gray-300 flex items-center p-2 h-full rounded-lg"></textarea>
+              type="text" className="w-full border border-gray-300 flex items-center p-2 h-full rounded-lg" required></textarea>
           </div>
-          <div className="border border-[#DAE0E6] mt-10 mb-4 w-1/6 rounded-2xl">
-            <button className="w-full"> + Image</button>
+          {/* <div className="border border-[#DAE0E6] mt-10 mb-4 w-1/6 rounded-2xl">
+            <button className="w-full" type="file"> + Image</button>
+          </div> */}
+          <div className="border border-[#DAE0E6] mt-10 mb-4 rounded-lg h-[80px]">
+            <div className="flex flex-col items-start">
+              <input
+                type="file"
+                onChange={handleImageChange}
+                multiple
+                // className="mb-4"
+              />
+              <div className="flex w-full mt-2">
+                {selectedImages.map((image, index) => (
+                  <img
+                    key={index}
+                    src={image}
+                    alt="Uploaded"
+                    className="w-[30px] h-[30px] mx-2"
+                  />
+                ))}
+              </div>
+            </div>
           </div>
           <div className="h-1 bg-[#d9d9d9] mb-4"></div>
           <div className="flex items-center text-center justify-end">
             <button
               to="/"
-              className="bg-[#0e64d2] text-white rounded-lg px-4 py-2"
+              className="bg-[#0e64d2] text-white rounded-lg px-4 py-2 "
+              onClick={handleSubmit}
             >
               Create
             </button>
@@ -130,7 +163,7 @@ const CreatePost = () => {
         </div>
       </div>
     </div>
-    </form>
+    </>
   );
 };
 export default CreatePost;

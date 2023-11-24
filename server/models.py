@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Float
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Float, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -19,6 +19,8 @@ class CommentVote(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     comment_id = Column(Integer, ForeignKey('comments.id'), nullable=False)
+    upvote = Column(Integer)
+    downvote = Column(Integer)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -32,6 +34,7 @@ class Posts(Base):
     title = Column(String, nullable=False)
     description = Column(String, nullable=False)
     image_url = Column(String)
+    is_deleted = Column(Boolean)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -52,6 +55,8 @@ class PostVote(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     post_id = Column(Integer, ForeignKey('posts.id'), nullable=False)
+    upvote = Column(Integer)
+    downvote = Column(Integer)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
