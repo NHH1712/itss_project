@@ -1,6 +1,7 @@
 import {Link, useNavigate} from "react-router-dom"
 import { useState } from 'react';
 import { useAuth } from "../contexts/AuthContext";
+import { message } from 'antd';
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -18,18 +19,18 @@ const Login = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        // console.log(data);
+        console.log(data)
         if(data){
-          login({ username, password });
+          login(data);
           navigateTo('/');
         }else{
-          alert('Login failed');
+          message.error('Login failed');
         }
       } else {
-        console.error('Login failed');
+        message.error('Login failed');
       }
     } catch (error) {
-      console.error('Error:', error);
+      message.error('Error:', error);
     }
   }
   return (
@@ -46,6 +47,7 @@ const Login = () => {
               className="ml-2 flex-grow outline-none"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              required
             />
           </div>
         </div>
@@ -58,6 +60,7 @@ const Login = () => {
               className="ml-2 flex-grow outline-none"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </div>
         </div>

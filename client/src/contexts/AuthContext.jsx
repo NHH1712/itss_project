@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export const AuthContext = createContext({
@@ -15,17 +15,32 @@ const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   const login = (values) => {
-    const { username, password } = values;
     localStorage.setItem(
       "current-user",
       JSON.stringify({
-        name: username,
-        password: password,
+        avatar_url: values.avatar_url,
+        classname: values.classname,
+        cover_image_url: values.cover_image_url,
+        created_at: values.created_at,
+        grade: values.grade,
+        id: values.id,
+        name: values.name,
+        password: values.password,
+        updated_at: values.updated_at,
+        username: values.username,
       })
     );
     setUser({
-      name: username,
-      password: password,
+      avatar_url: values.avatar_url,
+      classname: values.classname,
+      cover_image_url: values.cover_image_url,
+      created_at: values.created_at,
+      grade: values.grade,
+      id: values.id,
+      name: values.name,
+      password: values.password,
+      updated_at: values.updated_at,
+      username: values.username,
     });
     localStorage.setItem("access-token", "password");
     setIsLoggedIn(true);

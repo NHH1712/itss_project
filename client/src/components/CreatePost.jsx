@@ -7,7 +7,6 @@ const CreatePost = () => {
   const navigateTo = useNavigate();
   const authInfo = useAuth();
   const { user } = authInfo;
-  const [dataUser, setDataUser] = useState();
   const [tags, setTags] = useState([]);
   const [tag, setTag] = useState([]);
   const [title, setTitle] = useState("");
@@ -24,22 +23,6 @@ const CreatePost = () => {
       setSelectedImages((prevImages) => [...prevImages, ...newImageUrls]);
     }
   };
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch(`http://127.0.0.1:8000/user/${user.name}`)
-        if (response.ok) {
-          const data = await response.json();
-          setDataUser(data);
-        } else {
-          console.error("Failed to fetch user");
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
-    fetchUser();
-  },[]);
   useEffect(() => {
     const fetchTag = async () => {
       try {
@@ -60,17 +43,18 @@ const CreatePost = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:8000/posts/user/${dataUser.id}`, {
+      const response = await fetch(`http://localhost:8000/posts/user/${user.id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           post: {
-            user_id: dataUser.id,
+            user_id: user.id,
             title: title,
             description: description,
-            // image_url: fileList
+            image_url: "",
+            is_deleted: false
           },
           post_tags: tag.map(tag_id => ({ post_id: 0, tag_id: tag_id.id }))
         })
@@ -79,7 +63,7 @@ const CreatePost = () => {
         const data = await response.json();
         console.log(data);
         if(data){
-          alert('Create success');
+          message.success ('Create success');
           navigateTo('/');
         }
       } else {
@@ -95,8 +79,8 @@ const CreatePost = () => {
       <div className="bg-white h-14 flex items-center justify-between">
         <div className="font-bold text-[20px] leading-5 pl-6">HEDSOCIAL</div>
         <div className="flex mr-10">
-          <img src="/social-media.png" alt="user" width={20} height={20} className="mr-2"></img>
-          <span>{dataUser?.name}</span>
+          <img src={user?.avatar_url ? user.avatar_url : "/social-media.png"} alt="user" width={20} height={20} className="mr-2"></img>
+          <span className="font-bold">{user?.name}</span>
         </div>
       </div>
       <div className="create post w-3/5 h-[90%] mx-auto mt-4">
@@ -114,42 +98,43 @@ const CreatePost = () => {
             onChange={(value, options) => setTag(options.map(option => ({ id: option.id, value: option.value })))}
             options={tags.map((tag) => ({ value: tag.name, id: tag.id }))}
           />
-        <div className="bg-white h-4/5 p-4">
-          <div className="mb-2">
+        <div className="bg-white h-4/5 px-4 py-2 rounded">
+          <div className="mb-1">
             <span>Title</span><span className="text-red-600 ml-1">*</span>
             <input 
               onChange = {(e) => setTitle(e.target.value)}
               type="text" className="w-full border border-gray-300 flex items-center p-2 rounded-lg" required></input>
           </div>
-          <div className="h-1/2 mb-2">
+          <div className="h-1/2 mb-1">
             <span>Description</span><span className="text-red-600 ml-1">*</span>
             <textarea 
               onChange={(e) => setDescription(e.target.value)}
               type="text" className="w-full border border-gray-300 flex items-center p-2 h-full rounded-lg" required></textarea>
           </div>
-          {/* <div className="border border-[#DAE0E6] mt-10 mb-4 w-1/6 rounded-2xl">
-            <button className="w-full" type="file"> + Image</button>
-          </div> */}
-          <div className="border border-[#DAE0E6] mt-10 mb-4 rounded-lg h-[80px]">
-            <div className="flex flex-col items-start">
-              <input
-                type="file"
-                onChange={handleImageChange}
-                multiple
-                // className="mb-4"
-              />
-              <div className="flex w-full mt-2">
-                {selectedImages.map((image, index) => (
-                  <img
-                    key={index}
-                    src={image}
-                    alt="Uploaded"
-                    className="w-[30px] h-[30px] mx-2"
-                  />
-                ))}
+          <div className="mt-6 mb-4">
+            <span>Image</span>
+            <div className="">
+              <div className="flex flex-col items-start overflow-auto">
+                <input
+                  type="file"
+                  onChange={handleImageChange}
+                  multiple
+                  // className="mb-4"
+                />
+                <div className="flex w-full mt-2">
+                  {selectedImages.map((image, index) => (
+                    <img
+                      key={index}
+                      src={image}
+                      alt="Uploaded"
+                      className="w-[30px] h-[30px] mx-2"
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
+          
           <div className="h-1 bg-[#d9d9d9] mb-4"></div>
           <div className="flex items-center text-center justify-end">
             <button

@@ -1,7 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import SearchBar from "./layouts/SearchBar";
 import { useAuth } from "../contexts/AuthContext";
-import { useEffect, useState } from "react";
 import { Button, Dropdown, Space, } from 'antd';
 import { DownOutlined} from '@ant-design/icons';
 const Header = () => {
@@ -10,24 +9,6 @@ const Header = () => {
   const {user, isLoggedIn, logout } = authInfo
     ? authInfo
     : { isLoggedIn: false, logout: () => {} };
-  const [userData, setUserData] = useState()
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch(`http://127.0.0.1:8000/user/${user?.name}`)
-        if (response.ok) {
-          const data = await response.json();
-          setUserData(data);
-        } else {
-          console.error("Failed to fetch user");
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
-    fetchUser();
-  }
-  , []);
   const handleMenuClick = (e) => {
     switch (e.key) {
       case '1': 
@@ -81,13 +62,13 @@ const Header = () => {
                   <Button>
                     <Space>
                       <img
-                        src={userData?.avatar_url ? userData.avatar_url : "/social-media.png"}
+                        src={user?.avatar_url ? user.avatar_url : "/social-media.png"}
                         alt="user"
                         width={24}
                         height={24}
                         className="mr-2"
                       />
-                      <span className="font-bold mr-4">{userData?.name}</span>
+                      <span className="font-bold mr-4">{user?.name}</span>
                       <DownOutlined />
                     </Space>
                   </Button>

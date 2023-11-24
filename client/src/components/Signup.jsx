@@ -1,8 +1,27 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from 'react';
-import { Select } from 'antd';
+import { useEffect, useState } from 'react';
+import { Select, message } from 'antd';
 const Signup = () => {
   const navigate = useNavigate();
+  const [dataUsers, setDataUsers] = useState([]);
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch(`http://localhost:8000/users/`)
+        if (response.ok) {
+          const data = await response.json();
+          setDataUsers(data);
+        } else {
+          console.error("Failed to fetch user");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+    fetchUser();
+  },[]);
+  const usernameUsers = dataUsers.map((user) => user.username);
+  console.log(usernameUsers)
   const [formData, setFormData] = useState({
     name: '',
     username: '',
@@ -12,35 +31,18 @@ const Signup = () => {
     avatar_url: '',
     cover_image_url: '',
   });
+  
   const [confirmPass, setConFirmPass] = useState("");
-  // const checkUsernameAvailability = async (username) => {
-  //   console.log(username)
-  //   try {
-  //     const response = await fetch(`http://localhost:8000/user/${username}`, {
-  //       method: 'GET',
-  //       headers: {
-  //         'Content-Type': 'application/json'
-  //       },
-  //     });
-  //     console.log(response.body.text())
-  //   } catch (error) {
-  //     console.error('Error checking username availability:', error);
-  //     return false;
-  //   }
-  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
     if(formData.password != confirmPass) {
       alert("Password and Confirm Password must be the same")
       return;
     }
-    // console.log(formData);
-    // const isUsernameAvailable = await checkUsernameAvailability(formData.username);
-
-    // if (!isUsernameAvailable) {
-    //   alert('Username is already taken. Please choose another.');
-    //   return;
-    // }
+    if(usernameUsers.includes(formData.username)){
+      message.error("Username already exists")
+      return;
+    }
 
     try {
       const response = await fetch('http://localhost:8000/users/', {
@@ -55,7 +57,7 @@ const Signup = () => {
         console.log(data);
         navigate('/login');
       } else {
-        console.error('Signup failed');
+        message.error('Signup failed');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -75,6 +77,7 @@ const Signup = () => {
                 className="ml-2 flex-grow outline-none"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                required
               />
             </div>
           </div>
@@ -121,6 +124,7 @@ const Signup = () => {
                 className="ml-2 flex-grow outline-none"
                 value={formData.username}
                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                required
               />
             </div>
           </div>
@@ -134,6 +138,7 @@ const Signup = () => {
                 className="ml-2 flex-grow outline-none"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                required
               />
             </div>
           </div>
@@ -147,6 +152,7 @@ const Signup = () => {
                 className="ml-2 flex-grow outline-none"
                 value={confirmPass}
                 onChange={(e) => setConFirmPass(e.target.value)}
+                required
               />
             </div>
           </div>

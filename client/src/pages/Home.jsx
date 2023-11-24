@@ -1,6 +1,6 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "../contexts/AuthContext";
 import {
@@ -14,28 +14,9 @@ const Home = () => {
   const navigate = useNavigate();
   const authInfo = useAuth();
   const { user, isLoggedIn } = authInfo;
-  const [dataUser, setDataUser] = useState();
   const [posts, setPosts] = useState([]);
   const [contentMap, setContentMap] = useState({});
   const [postID, setPostID] = useState("");
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch(
-          `http://127.0.0.1:8000/user/${user?.name}`
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setDataUser(data);
-        } else {
-          console.error("Failed to fetch user");
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
-    fetchUser();
-  }, []);
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -81,7 +62,7 @@ const Home = () => {
         },
         body: JSON.stringify({
           content: content,
-          user_id: dataUser.id,
+          user_id: user.id,
           post_id: postID,
         }),
       });
@@ -99,28 +80,29 @@ const Home = () => {
     navigate(`/update-post/${postId}`);
   };
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  console.log(confirmDelete)
+  const confirmDeleteRef = useRef(false);
   const showModal = () => {
     setIsModalOpen(true);
   };
   const handleOk = () => {
     setIsModalOpen(false);
-    setConfirmDelete(true);
+    confirmDeleteRef.current = true;
   };
   const handleCancel = () => {
     setIsModalOpen(false);
-    setConfirmDelete(false);
+    confirmDeleteRef.current = false;
   };
   const handleDelete = async (postId) => {
-    showModal();
-    if (!confirmDelete) return;
+    // showModal();
     try {
       const response = await fetch(`http://127.0.0.1:8000/posts/${postId}`, {
-        method: "DELETE",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          is_deleted: true,
+        }),
       });
       if (response.ok) {
         window.location.reload(true)
@@ -147,7 +129,7 @@ const Home = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          user_id: dataUser.id,
+          user_id: user.id,
           post_id: postId,
         }),
       });
@@ -172,7 +154,7 @@ const Home = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          user_id: dataUser.id,
+          user_id: user.id,
           comment_id: commentId,
         }),
       });
@@ -212,7 +194,7 @@ const Home = () => {
           <div className="sticky z-10 top-[72px]">
             <div className="h-14 bg-white p-2 mb-4 flex">
               {isLoggedIn ? (
-                <img src={dataUser?.avatar_url ? dataUser.avatar_url : "/social-media.png"} alt="icon" className="mx-2" />
+                <img src={user?.avatar_url ? user.avatar_url : "/social-media.png"} alt="icon" className="mx-2" />
               ) : (
                 <img src="/social-media.png" alt="icon" className="mx-2" />
               )}
@@ -307,7 +289,7 @@ const Home = () => {
                     ))}
                   </div>
                   <div className="flex">
-                    {isLoggedIn && post.user_id === dataUser?.id && (
+                    {isLoggedIn && post.user_id === user?.id && (
                       <>
                         <button
                           onClick={() =>
@@ -418,7 +400,7 @@ const Home = () => {
                     <div className="text comment flex mt-4 ml-4">
                       <img
                         // src="/social-media.png"
-                        src={dataUser?.avatar_url ? dataUser.avatar_url : "/social-media.png"}
+                        src={user?.avatar_url ? user.avatar_url : "/social-media.png"}
                         alt="cmt icon"
                         width={32}
                         height={32}
