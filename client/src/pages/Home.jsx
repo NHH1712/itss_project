@@ -93,10 +93,10 @@ const Home = () => {
     confirmDeleteRef.current = false;
   };
   const handleDelete = async (postId) => {
-    // showModal();
+    showModal();
     try {
-      const response = await fetch(`http://127.0.0.1:8000/posts/${postId}`, {
-        method: "PUT",
+      const response = await fetch(`http://127.0.0.1:8000/delete/posts/${postId}`, {
+        method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
@@ -168,21 +168,23 @@ const Home = () => {
     }
   };
   const sortPosts = (posts) => {
+    const filteredPosts = posts.filter(post => post.is_deleted != true);
+
     switch (sortCriteria) {
       case "best":
-        return posts.sort((a, b) => b.id - a.id);
+        return filteredPosts.sort((a, b) => b.id - a.id);
       case "hot":
-        return posts.sort((a, b) => b.post_vote?.length - a.post_vote?.length);
+        return filteredPosts.sort((a, b) => b.post_vote?.length - a.post_vote?.length);
       case "new":
-        return posts.sort(
+        return filteredPosts.sort(
           (a, b) => new Date(b.created_at) - new Date(a.created_at)
         );
       case "top":
-        return posts.sort(
+        return filteredPosts.sort(
           (a, b) => (b.comments?.length ?? 0) - (a.comments?.length ?? 0)
         );
       default:
-        return posts;
+        return filteredPosts;
     }
   };
   const sortedPosts = sortPosts(posts);
