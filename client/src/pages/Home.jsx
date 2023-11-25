@@ -410,7 +410,7 @@ const Home = () => {
                       <input
                         type="text"
                         key={post.id}
-                        className="p-1 border border-gray-400 mx-2 rounded-lg w-[60vh]"
+                        className="p-1 border border-gray-400 ml-2 rounded-lg w-[60vh]"
                         placeholder="Send message"
                         id={post.id}
                         value={contentMap[post.id] || ""}

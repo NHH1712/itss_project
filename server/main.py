@@ -194,22 +194,24 @@ async def update_post_change(post_id: int, post: SchemaPosts, post_tags: List[Sc
     db.session.commit()
     return db_post
 
+@app.put('/restore/posts/{post_id}', response_model=SchemaPosts)
+async def restore_post(post_id: int):
+    db_post = db.session.query(ModelPosts).filter(ModelPosts.id == post_id).first()
+    db_post.is_deleted = False
+    db.session.commit()
+    return db_post
+
 @app.delete('/delete/posts/{post_id}')
 async def delete_post(post_id: int):
     db_post = db.session.query(ModelPosts).filter(ModelPosts.id == post_id).first()
-    # db.session.delete(db_post)
-    # db.session.commit()
-    # return {'message': 'Post has been deleted successfully'}
     if db_post is None:
         raise HTTPException(status_code=404, detail="Post not found")
 
     try:
-        # Soft delete by updating is_deleted to True
         db_post.is_deleted = True
         db.session.commit()
         return {'message': 'Post has been soft-deleted successfully'}
     except Exception as e:
-        # Handle any database-related exceptions
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
 # Post tag crud
