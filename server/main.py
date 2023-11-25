@@ -163,6 +163,9 @@ async def post_by_user_id(user_id: int, post: SchemaPosts, post_tags: List[Schem
         post_tag = ModelPostTag(post_id=new_post.id, tag_id=tag.tag_id)
         db.session.add(post_tag)
     db.session.commit()
+    post_vote = ModelPostVote(user_id=user_id, post_id=new_post.id, upvote=0, downvote=0)
+    db.session.add(post_vote)
+    db.session.commit()
     return new_post
 
 
@@ -305,9 +308,9 @@ async def delete_comment(comment_id: int):
 async def get_post_vote():
     post_vote = db.session.query(ModelPostVote).all()
     return post_vote
-@app.get('/post_vote/{post_vote_id}')
-async def get_post_vote(post_vote_id: int):
-    post_vote = db.session.query(ModelPostVote).filter(ModelPostVote.id == post_vote_id).first()
+@app.get('/post_vote/{post_id}')
+async def get_post_vote(post_id: int):
+    post_vote = db.session.query(ModelPostVote).filter(ModelPostVote.post_id == post_id).all()
     return post_vote
 @app.post('/post_vote/', response_model=SchemaPostVote)
 async def post_vote(post_vote: SchemaPostVote):
@@ -319,6 +322,9 @@ async def post_vote(post_vote: SchemaPostVote):
     if existing_vote:
         raise HTTPException(status_code=400, detail="User has already voted for this post")
     db_post_vote = ModelPostVote(user_id=post_vote.user_id, post_id=post_vote.post_id)
+    db_post_vote.upvote = 0
+    db_post_vote.downvote = 0
+    db_post_vote.upvote = db_post_vote.upvote + 1
     db.session.add(db_post_vote)
     db.session.commit()
     return db_post_vote
@@ -327,6 +333,18 @@ async def update_post_vote(post_vote_id: int, post_vote: SchemaPostVote):
     db_post_vote = db.session.query(ModelPostVote).filter(ModelPostVote.id == post_vote_id).first()
     db_post_vote.user_id = post_vote.user_id
     db_post_vote.post_id = post_vote.post_id
+    db.session.commit()
+    return db_post_vote
+@app.put('/post_vote/upvote/{post_id}', response_model=SchemaPostVote)
+async def upvote_post_vote(post_id: int, post_vote: SchemaPostVote):
+    db_post_vote = db.session.query(ModelPostVote).filter(ModelPostVote.id == post_id).first()
+    db_post_vote.upvote = post_vote.upvote + 1
+    db.session.commit()
+    return db_post_vote
+@app.put('/post_vote/downvote/{post_id}', response_model=SchemaPostVote)
+async def downvote_post_vote(post_id: int, post_vote: SchemaPostVote):
+    db_post_vote = db.session.query(ModelPostVote).filter(ModelPostVote.id == post_id).first()
+    db_post_vote.downvote = post_vote.downvote
     db.session.commit()
     return db_post_vote
 @app.delete('/post_vote/{post_vote_id}')

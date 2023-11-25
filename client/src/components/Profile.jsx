@@ -460,7 +460,7 @@ const Profile = () => {
                               <button
                                 style={{ height: "32px" }}
                                 className="flex items-center"
-                                // onClick={handleSubmit}
+                                // onClick={handleComment}
                               >
                                 <img src="/send.png" alt="send cmt"></img>
                               </button>

@@ -68,6 +68,7 @@ const Home = () => {
       });
       if (response.ok) {
         const data = await response.json();
+        window.location.reload(true)
         console.log(data);
       } else {
         console.error("Failed to create comment");

@@ -19,8 +19,8 @@ class CommentVote(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     comment_id = Column(Integer, ForeignKey('comments.id'), nullable=False)
-    upvote = Column(Integer)
-    downvote = Column(Integer)
+    upvote = Column(Integer, default=0)
+    downvote = Column(Integer, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -55,8 +55,8 @@ class PostVote(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     post_id = Column(Integer, ForeignKey('posts.id'), nullable=False)
-    upvote = Column(Integer)
-    downvote = Column(Integer)
+    upvote = Column(Integer, default=0)
+    downvote = Column(Integer, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
