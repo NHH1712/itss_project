@@ -650,11 +650,11 @@ const Profile = () => {
                   ))}
           </div>
         </div>
-        <div className="info w-[25%] bg-white">
+        <div className="info w-[25%] h-3/4 bg-white">
           <div className="h-14 border-b font-bold items-center flex">
             <span className="w-[90%] mx-auto">Info</span>
           </div>
-          <div className="h-full">
+          <div className="">
             <div className="w-[90%] h-[30%] mt-4 mx-auto rounded p-1 border border-gray-200">
               <div className="mb-2">
                 <img

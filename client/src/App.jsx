@@ -6,6 +6,7 @@ import CreatePost from "./components/CreatePost";
 import UpdatePost from "./components/UpdatePost";
 import AuthProvider from "./contexts/AuthContext";
 import Profile from "./components/Profile";
+import UpdateProfile from "./components/UpdateProfile";
 function App() {
   return (
     <BrowserRouter>
@@ -17,6 +18,7 @@ function App() {
           <Route path="/create-post" element={<CreatePost />} exact />
           <Route path="/update-post/:postId" element={<UpdatePost />} exact />
           <Route path="/profile" element={<Profile />} exact />
+          <Route path="/update-profile" element={<UpdateProfile/>} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

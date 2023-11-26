@@ -15,6 +15,7 @@ const Home = () => {
   const authInfo = useAuth();
   const { user, isLoggedIn } = authInfo;
   const [posts, setPosts] = useState([]);
+  const [tags, setTags] = useState([]);
   const [contentMap, setContentMap] = useState({});
   const [postID, setPostID] = useState("");
   useEffect(() => {
@@ -34,6 +35,31 @@ const Home = () => {
 
     fetchPosts();
   }, []);
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/tags/");
+        if (response.ok) {
+          const data = await response.json();
+          setTags(data);
+        } else {
+          console.error("Failed to fetch tags");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+    fetchTags();
+  }, []);
+  const predefinedColors = [
+    '#FF5733', '#33FF57', '#5733FF', '#FF3364', '#33A0FF',
+    '#FFD133', '#FF33A5', '#33FFB2', '#8E33FF', '#FF8C33'
+  ];
+  const tagColors = {};
+  tags.forEach((tag, index) => {
+    tagColors[tag.id] = predefinedColors[index % predefinedColors.length];
+  });
+  console.log(tagColors)
   const handleCreatePostClick = () => {
     if (isLoggedIn) {
       navigate("/create-post");
@@ -191,6 +217,15 @@ const Home = () => {
     }
   };
   const sortedPosts = sortPosts(posts);
+  const recentPosts = [...posts]
+  .filter(post => isLoggedIn ? post.user_id === user.id : true) // Filter posts for the logged-in user
+  .sort((a, b) => {
+    const dateA = new Date(a.update_at || a.created_at);
+    const dateB = new Date(b.update_at || b.created_at);
+
+    return dateB - dateA;
+  })
+  .slice(0, 3);
   return (
     <div className="h-screen w-screen bg-gray-100 overflow-y-auto ">
       <Header />
@@ -288,6 +323,7 @@ const Home = () => {
                       <div
                         key={tag.id}
                         className="tag text-xs mr-1 border border-gray-200 p-1 rounded-lg bg-neutral-700 text-white"
+                        style={{ backgroundColor: tagColors[tag.tag.id] }}
                       >
                         {tag.tag.name}
                       </div>
@@ -436,13 +472,13 @@ const Home = () => {
             </div>
           ))}
         </div>
-        <div className="recent-post w-1/3 bg-white p-4 h-screen">
+        <div className="recent-post w-1/3 bg-white p-4 h-[60vh]">
           <div>
             <p className="font-bold text-black">RECENT POST</p>
           </div>
           {isLoggedIn && (
             <div>
-              {posts.map((post) => (
+              {recentPosts.map((post) => (
                 <div key={post.id} className="post-item flex mt-4 h-[15vh]">
                   <div className="">
                     <div className="flex">
