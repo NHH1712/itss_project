@@ -19,7 +19,7 @@ const Login = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        console.log(data)
+        // console.log(data)
         if(data){
           login(data);
           navigateTo('/');

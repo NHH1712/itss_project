@@ -335,18 +335,42 @@ async def update_post_vote(post_vote_id: int, post_vote: SchemaPostVote):
     db_post_vote.post_id = post_vote.post_id
     db.session.commit()
     return db_post_vote
-@app.put('/post_vote/upvote/{post_id}', response_model=SchemaPostVote)
-async def upvote_post_vote(post_id: int, post_vote: SchemaPostVote):
-    db_post_vote = db.session.query(ModelPostVote).filter(ModelPostVote.id == post_id).first()
-    db_post_vote.upvote = post_vote.upvote + 1
-    db.session.commit()
-    return db_post_vote
-@app.put('/post_vote/downvote/{post_id}', response_model=SchemaPostVote)
-async def downvote_post_vote(post_id: int, post_vote: SchemaPostVote):
-    db_post_vote = db.session.query(ModelPostVote).filter(ModelPostVote.id == post_id).first()
-    db_post_vote.downvote = post_vote.downvote
-    db.session.commit()
-    return db_post_vote
+
+@app.put('/post_vote/vote/', response_model=SchemaPostVote)
+async def post_vote(post_vote: SchemaPostVote, type_vote: str):
+    existing_vote = db.session.query(ModelPostVote).filter_by(
+        user_id=post_vote.user_id,
+        post_id=post_vote.post_id
+    ).first()
+    if existing_vote:
+        if(type_vote == "up"):
+            if existing_vote.upvote == 0:
+                existing_vote.upvote = 1
+                existing_vote.downvote = 0
+            else: 
+                existing_vote.upvote = 0
+        else:
+            if existing_vote.downvote == 0:
+                existing_vote.downvote = 1
+                existing_vote.upvote = 0
+            else: 
+                existing_vote.downvote = 0
+        db.session.commit()
+    else:
+        existing_vote = ModelPostVote(user_id=post_vote.user_id, post_id=post_vote.post_id)
+        existing_vote.upvote = 0
+        existing_vote.downvote = 0
+        if(type_vote == "up"):
+            existing_vote.upvote = existing_vote.upvote + 1
+        else:
+            existing_vote.downvote = existing_vote.downvote + 1
+        db.session.add(existing_vote)
+        db.session.commit()
+
+    return existing_vote
+
+
+
 @app.delete('/post_vote/{post_vote_id}')
 async def delete_post_vote(post_vote_id: int):
     db_post_vote = db.session.query(ModelPostVote).filter(ModelPostVote.id == post_vote_id).first()

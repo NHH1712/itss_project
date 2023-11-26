@@ -10,6 +10,7 @@ const Profile = () => {
   const authInfo = useAuth();
   const { user } = authInfo;
   const [posts, setPosts] = useState([]);
+  console.log(posts)
   const [showDeleted, setShowDeleted] = useState(false);
   const handleEditClick = (postId) => {
     navigate(`/update-post/${postId}`);
@@ -70,8 +71,56 @@ const Profile = () => {
     }
   };
   const handleVotePostUp = async (postId) => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/post_vote/vote/?type_vote=up', {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          post_id: postId,
+          upvote : 0,
+          downvote: 0
+        }),
+      });
+      if (response.ok) {
+        message.success("Vote success")
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      } else {
+        console.error("Vote failed");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
   }
   const handleVotePostDown = async (postId) => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/post_vote/vote/?type_vote=down', {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          post_id: postId,
+          upvote : 0,
+          downvote: 0
+        }),
+      });
+      if (response.ok) {
+        message.success("Vote success")
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      } else {
+        console.error("Vote failed");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
   }
   const handleCommentVoteDown = async (commentId) => {
   }
@@ -179,7 +228,7 @@ const Profile = () => {
                             <button className="w-fit" onClick={() => handleVotePostUp(post.id)}>
                               <UpCircleOutlined />
                             </button>
-                            +{post.post_vote?.length ?? 0}
+                            {post.post_vote?.reduce((acc, vote) => acc + (vote.upvote - vote.downvote), 0) ?? 0}
                             <button className="w-fit" onClick={() => handleVotePostDown(post.id)}>
                               <DownCircleOutlined />
                             </button>

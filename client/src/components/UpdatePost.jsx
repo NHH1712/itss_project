@@ -9,7 +9,6 @@ const UpdatePost = () => {
   const { user } = authInfo;
   const [dataPost, setDataPost] = useState();
   const [dataPostTag, setDataPostTag] = useState();
-  console.log(dataPostTag)
   const [tags, setTags] = useState([]);
   const { postId } = useParams();
   const [selectedImages, setSelectedImages] = useState([]);

@@ -9,12 +9,13 @@ import {
   UpCircleOutlined,
   DownCircleOutlined,
 } from "@ant-design/icons";
-import { Modal } from "antd";
+import { Modal, message } from "antd";
 const Home = () => {
   const navigate = useNavigate();
   const authInfo = useAuth();
   const { user, isLoggedIn } = authInfo;
   const [posts, setPosts] = useState([]);
+  console.log(posts)
   const [contentMap, setContentMap] = useState({});
   const [postID, setPostID] = useState("");
   useEffect(() => {
@@ -118,31 +119,58 @@ const Home = () => {
   const handleSortClick = (criteria) => {
     setSortCriteria(criteria);
   };
-  const handleVote = async (postId) => {
-    if(!isLoggedIn) {
-      alert("Cannot vote post. User is not logged in.");
-      return;
-    }
+  const handleVotePostUp = async (postId) => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/post_vote/", {
-        method: "POST",
+      const response = await fetch('http://127.0.0.1:8000/post_vote/vote/?type_vote=up', {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           user_id: user.id,
           post_id: postId,
+          upvote : 0,
+          downvote: 0
         }),
       });
       if (response.ok) {
-        window.location.reload(true)
+        message.success("Vote success")
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
       } else {
-        console.error("Failed to vote");
+        console.error("Vote failed");
       }
     } catch (error) {
       console.error("Error:", error);
     }
-  };
+  }
+  const handleVotePostDown = async (postId) => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/post_vote/vote/?type_vote=down', {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          post_id: postId,
+          upvote : 0,
+          downvote: 0
+        }),
+      });
+      if (response.ok) {
+        message.success("Vote success")
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      } else {
+        console.error("Vote failed");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
   const handleCommentVote = async (commentId) => {
     if(!isLoggedIn) {
       alert("Cannot vote comment. User is not logged in.");
@@ -339,11 +367,11 @@ const Home = () => {
                 </div>
                 <div className="content-post h-[60%] flex">
                   <div className="w-[5%] mr-6 font-bold flex flex-col items-center">
-                    <button className="w-fit" onClick={() => handleVote(post.id)}>
+                    <button className="w-fit" onClick={() => handleVotePostUp(post.id)}>
                       <UpCircleOutlined />
                     </button>
-                    +{post.post_vote?.length ?? 0}
-                    <button className="w-fit" onClick={() => handleVote(post.id)}>
+                    {post.post_vote?.reduce((acc, vote) => acc + (vote.upvote - vote.downvote), 0) ?? 0}
+                    <button className="w-fit" onClick={() => handleVotePostDown(post.id)}>
                       <DownCircleOutlined />
                     </button>
                   </div>
