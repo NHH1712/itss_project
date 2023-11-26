@@ -2,7 +2,12 @@ import Header from "./Header";
 import { useAuth } from "../contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { DeleteOutlined, EditOutlined,DownCircleOutlined, UpCircleOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  DownCircleOutlined,
+  UpCircleOutlined,
+} from "@ant-design/icons";
 import { Modal, message } from "antd";
 import { useNavigate } from "react-router-dom";
 const Profile = () => {
@@ -10,7 +15,6 @@ const Profile = () => {
   const authInfo = useAuth();
   const { user } = authInfo;
   const [posts, setPosts] = useState([]);
-  console.log(posts)
   const [showDeleted, setShowDeleted] = useState(false);
   const handleEditClick = (postId) => {
     navigate(`/update-post/${postId}`);
@@ -49,17 +53,20 @@ const Profile = () => {
     // showModal();
     // if (!confirmDelete) return;
     try {
-      const response = await fetch(`http://127.0.0.1:8000/delete/posts/${postId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          is_deleted: true,
-        }),
-      });
+      const response = await fetch(
+        `http://127.0.0.1:8000/delete/posts/${postId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            is_deleted: true,
+          }),
+        }
+      );
       if (response.ok) {
-        message.success("Delete success")
+        message.success("Delete success");
         setTimeout(() => {
           window.location.reload();
         }, 500);
@@ -70,22 +77,25 @@ const Profile = () => {
       console.error("Error:", error);
     }
   };
-  const handleVotePostUp = async (postId) => {
+  const handleVotePost = async (postId, type_vote) => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/post_vote/vote/?type_vote=up', {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_id: user.id,
-          post_id: postId,
-          upvote : 0,
-          downvote: 0
-        }),
-      });
+      const response = await fetch(
+        `http://127.0.0.1:8000/post_vote/vote/?type_vote=${type_vote}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_id: user.id,
+            post_id: postId,
+            upvote: 0,
+            downvote: 0,
+          }),
+        }
+      );
       if (response.ok) {
-        message.success("Vote success")
+        message.success("Vote success");
         setTimeout(() => {
           window.location.reload();
         }, 500);
@@ -95,47 +105,44 @@ const Profile = () => {
     } catch (error) {
       console.error("Error:", error);
     }
-  }
-  const handleVotePostDown = async (postId) => {
+  };
+
+  const handleCommentVote = async (commentId, type_vote) => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/post_vote/vote/?type_vote=down', {
+      const response = await fetch(`http://127.0.0.1:8000/comment_vote/vote/?type_vote=${type_vote}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           user_id: user.id,
-          post_id: postId,
-          upvote : 0,
-          downvote: 0
+          comment_id: commentId,
+          upvote: 0,
+          downvote: 0,
         }),
       });
       if (response.ok) {
-        message.success("Vote success")
-        setTimeout(() => {
-          window.location.reload();
-        }, 500);
+        window.location.reload(true)
       } else {
-        console.error("Vote failed");
+        console.error("Failed to vote comment");
       }
     } catch (error) {
       console.error("Error:", error);
     }
-  }
-  const handleCommentVoteDown = async (commentId) => {
-  }
-  const handleCommentVoteUp = async (commentId) => {
-  }
+  };
   const handleRestorePost = async (postId) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/restore/posts/${postId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `http://127.0.0.1:8000/restore/posts/${postId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (response.ok) {
-        message.success("Restore success")
+        message.success("Restore success");
         setTimeout(() => {
           window.location.reload();
         }, 500);
@@ -145,7 +152,40 @@ const Profile = () => {
     } catch (error) {
       console.error("Error:", error);
     }
-  }
+  };
+  const [contentMap, setContentMap] = useState({});
+  const [postID, setPostID] = useState("");
+  const handleContentChange = (postId) => (e) => {
+    const newContentMap = { ...contentMap, [postId]: e.target.value };
+    setContentMap(newContentMap);
+    setPostID(postId);
+    console.log(contentMap);
+  };
+  const handleComment = async (e) => {
+    const content = contentMap[postID];
+    e.preventDefault();
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/comments/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: content,
+          user_id: user.id,
+          post_id: postID,
+        }),
+      });
+      if (response.ok) {
+        // const data = await response.json();
+        window.location.reload(true);
+      } else {
+        console.error("Failed to create comment");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
   return (
     <div className="w-screen h-screen bg-[#e7e5e4] overflow-y-auto">
       <Header />
@@ -220,16 +260,31 @@ const Profile = () => {
                             ))}
                           </div>
                           <div className="flex ">
-                            <button className="text-white bg-[#0e64d2]" onClick={() => handleRestorePost(post.id)}>Restore</button>
+                            <button
+                              className="text-white bg-[#0e64d2]"
+                              onClick={() => handleRestorePost(post.id)}
+                            >
+                              Restore
+                            </button>
                           </div>
                         </div>
                         <div className="content-post h-[60%] flex">
                           <div className="w-[5%] mr-6 font-bold flex flex-col items-center">
-                            <button className="w-fit" onClick={() => handleVotePostUp(post.id)}>
+                            <button
+                              className="w-fit"
+                              onClick={() => handleVotePost(post.id, "up")}
+                            >
                               <UpCircleOutlined />
                             </button>
-                            {post.post_vote?.reduce((acc, vote) => acc + (vote.upvote - vote.downvote), 0) ?? 0}
-                            <button className="w-fit" onClick={() => handleVotePostDown(post.id)}>
+                            {post.post_vote?.reduce(
+                              (acc, vote) =>
+                                acc + (vote.upvote - vote.downvote),
+                              0
+                            ) ?? 0}
+                            <button
+                              className="w-fit"
+                              onClick={() => handleVotePost(post.id, "down")}
+                            >
                               <DownCircleOutlined />
                             </button>
                           </div>
@@ -252,48 +307,80 @@ const Profile = () => {
                         <div className="comment-post h-[30%] flex">
                           <div className="border-l-2 border-gray-400">
                             {post.comments?.length ? (
-                            <div className="h-20 overflow-y-auto">
-                              {post.comments?.map((comment) => (
-                                <div
-                                  key={comment.id}
-                                  className="comment-item ml-4"
-                                >
-                                  <div className="comment header flex">
-                                    <div className="mr-2">
-                                      <img
-                                        // src="/social-media.png"
-                                        src={
-                                          comment.user?.avatar_url
-                                            ? comment.user.avatar_url
-                                            : "/social-media.png"
+                              <div className="h-20 overflow-y-auto">
+                                {post.comments?.map((comment) => (
+                                  <div
+                                    key={comment.id}
+                                    className="comment-item ml-4"
+                                  >
+                                    <div className="comment header flex">
+                                      <div className="mr-2">
+                                        <img
+                                          // src="/social-media.png"
+                                          src={
+                                            comment.user?.avatar_url
+                                              ? comment.user.avatar_url
+                                              : "/social-media.png"
+                                          }
+                                          alt="cmt icon"
+                                          width={32}
+                                          height={32}
+                                        ></img>
+                                      </div>
+                                      <div className="flex items-center justify-center font-bold">
+                                        {comment.user.name}
+                                      </div>
+                                      <div className="mr-2 ml-2 font-light text-xs flex items-center justify-center">
+                                        {formatDistanceToNow(
+                                          new Date(comment.created_at)
+                                        )}{" "}
+                                        ago
+                                      </div>
+                                    </div>
+                                    <div className="comment content mr-2 border-dotted border-l-2 border-gray-400 pl-4">
+                                      {comment.content}
+                                    </div>
+                                    <div className="vote font-bold flex flex-row items-center">
+                                      <button
+                                        className="w-fit"
+                                        onClick={() =>
+                                          handleCommentVote(comment.id, "up")
                                         }
-                                        alt="cmt icon"
-                                        width={32}
-                                        height={32}
-                                      ></img>
-                                    </div>
-                                    <div className="flex items-center justify-center font-bold">
-                                      {comment.user.name}
-                                    </div>
-                                    <div className="mr-2 ml-2 font-light text-xs flex items-center justify-center">
-                                      {formatDistanceToNow(
-                                        new Date(comment.created_at)
-                                      )}{" "}
-                                      ago
+                                      >
+                                        <UpCircleOutlined />
+                                      </button>
+                                      {post.comments
+                                        .map(
+                                          (comment) =>
+                                            comment.comment_vote?.reduce(
+                                              (acc, vote) => acc + vote.upvote,
+                                              0
+                                            ) ?? 0
+                                        )
+                                        .reduce((acc, curr) => acc + curr, 0)}
+                                      <button
+                                        className="w-fit"
+                                        onClick={() =>
+                                          handleCommentVote(comment.id, "down")
+                                        }
+                                      >
+                                        <DownCircleOutlined />
+                                      </button>
+                                      {post.comments
+                                        .map(
+                                          (comment) =>
+                                            comment.comment_vote?.reduce(
+                                              (acc, vote) =>
+                                                acc + vote.downvote,
+                                              0
+                                            ) ?? 0
+                                        )
+                                        .reduce((acc, curr) => acc + curr, 0)}
                                     </div>
                                   </div>
-                                  <div className="comment content mr-2 border-dotted border-l-2 border-gray-400 pl-4">
-                                    {comment.content}
-                                  </div>
-                                  <div className="vote font-bold flex flex-row items-center">
-                                    <button className="w-fit" onClick={() => handleCommentVoteUp(comment.id)}><UpCircleOutlined/></button>
-                                    {post.comments.map((comment) => comment.comment_vote?.length ?? 0).reduce((acc, curr) => acc + curr, 0)}
-                                    <button className="w-fit" onClick={() => handleCommentVoteDown(comment.id)}><DownCircleOutlined/></button>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                            ): null} 
+                                ))}
+                              </div>
+                            ) : null}
                             <div className="text comment flex mt-4 ml-4">
                               <img
                                 // src="/social-media.png"
@@ -312,13 +399,13 @@ const Profile = () => {
                                 className="p-1 border border-gray-400 ml-2 rounded-lg w-[60vh]"
                                 placeholder="Send message"
                                 id={post.id}
-                                // value={contentMap[post.id] || ""}
-                                // onChange={handleContentChange(post.id)}
+                                value={contentMap[post.id] || ""}
+                                onChange={handleContentChange(post.id)}
                               ></input>
                               <button
                                 style={{ height: "32px" }}
                                 className="flex items-center"
-                                // onClick={handleSubmit}
+                                onClick={handleComment}
                               >
                                 <img src="/send.png" alt="send cmt"></img>
                               </button>
@@ -418,11 +505,21 @@ const Profile = () => {
                         </div>
                         <div className="content-post h-[60%] flex">
                           <div className="w-[5%] mr-6 font-bold flex flex-col items-center">
-                            <button className="w-fit" onClick={() => handleVotePostUp(post.id)}>
+                            <button
+                              className="w-fit"
+                              onClick={() => handleVotePost(post.id, "up")}
+                            >
                               <UpCircleOutlined />
                             </button>
-                            +{post.post_vote?.length ?? 0}
-                            <button className="w-fit" onClick={() => handleVotePostDown(post.id)}>
+                            {post.post_vote?.reduce(
+                              (acc, vote) =>
+                                acc + (vote.upvote - vote.downvote),
+                              0
+                            ) ?? 0}
+                            <button
+                              className="w-fit"
+                              onClick={() => handleVotePost(post.id, "down")}
+                            >
                               <DownCircleOutlined />
                             </button>
                           </div>
@@ -478,9 +575,40 @@ const Profile = () => {
                                     {comment.content}
                                   </div>
                                   <div className="vote font-bold flex flex-row items-center">
-                                    <button className="w-fit" onClick={() => handleCommentVoteUp(comment.id)}><UpCircleOutlined/></button>
-                                    {post.comments.map((comment) => comment.comment_vote?.length ?? 0).reduce((acc, curr) => acc + curr, 0)}
-                                    <button className="w-fit" onClick={() => handleCommentVoteDown(comment.id)}><DownCircleOutlined/></button>
+                                    <button
+                                      className="w-fit"
+                                      onClick={() =>
+                                        handleCommentVote(comment.id, "up")
+                                      }
+                                    >
+                                      <UpCircleOutlined />
+                                    </button>
+                                    {post.comments
+                                      .map(
+                                        (comment) =>
+                                          comment.comment_vote?.reduce(
+                                            (acc, vote) => acc + vote.upvote,
+                                            0
+                                          ) ?? 0
+                                      )
+                                      .reduce((acc, curr) => acc + curr, 0)}
+                                    <button
+                                      className="w-fit"
+                                      onClick={() =>
+                                        handleCommentVote(comment.id, "down")
+                                      }
+                                    >
+                                      <DownCircleOutlined />
+                                    </button>
+                                    {post.comments
+                                      .map(
+                                        (comment) =>
+                                          comment.comment_vote?.reduce(
+                                            (acc, vote) => acc + vote.downvote,
+                                            0
+                                          ) ?? 0
+                                      )
+                                      .reduce((acc, curr) => acc + curr, 0)}
                                   </div>
                                 </div>
                               ))}
@@ -503,13 +631,13 @@ const Profile = () => {
                                 className="p-1 border border-gray-400 ml-2 rounded-lg w-[60vh]"
                                 placeholder="Send message"
                                 id={post.id}
-                                // value={contentMap[post.id] || ""}
-                                // onChange={handleContentChange(post.id)}
+                                value={contentMap[post.id] || ""}
+                                onChange={handleContentChange(post.id)}
                               ></input>
                               <button
                                 style={{ height: "32px" }}
                                 className="flex items-center"
-                                // onClick={handleComment}
+                                onClick={handleComment}
                               >
                                 <img src="/send.png" alt="send cmt"></img>
                               </button>

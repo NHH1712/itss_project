@@ -261,6 +261,39 @@ async def comment_vote(comment_vote: SchemaCommentVote):
     db.session.add(db_comment_vote)
     db.session.commit()
     return db_comment_vote
+@app.put('/comment_vote/vote/', response_model=SchemaCommentVote)
+async def comment_vote(comment_vote: SchemaCommentVote, type_vote: str):
+    existing_vote = db.session.query(ModelCommentVote).filter_by(
+        user_id=comment_vote.user_id,
+        comment_id=comment_vote.comment_id
+    ).first()
+    if existing_vote:
+        if(type_vote == "up"):
+            if existing_vote.upvote == 0:
+                existing_vote.upvote = 1
+                existing_vote.downvote = 0
+            else: 
+                existing_vote.upvote = 0
+        else:
+            if existing_vote.downvote == 0:
+                existing_vote.downvote = 1
+                existing_vote.upvote = 0
+            else: 
+                existing_vote.downvote = 0
+        db.session.commit()
+    else:
+        existing_vote = ModelCommentVote(user_id=comment_vote.user_id, comment_id=comment_vote.comment_id)
+        existing_vote.upvote = 0
+        existing_vote.downvote = 0
+        if(type_vote == "up"):
+            existing_vote.upvote = existing_vote.upvote + 1
+        else:
+            existing_vote.downvote = existing_vote.downvote + 1
+        db.session.add(existing_vote)
+        db.session.commit()
+
+    return existing_vote
+
 @app.put('/comment_vote/{comment_vote_id}', response_model=SchemaCommentVote)
 async def update_comment_vote(comment_vote_id: int, comment_vote: SchemaCommentVote):
     db_comment_vote = db.session.query(ModelCommentVote).filter(ModelCommentVote.id == comment_vote_id).first()
@@ -368,8 +401,6 @@ async def post_vote(post_vote: SchemaPostVote, type_vote: str):
         db.session.commit()
 
     return existing_vote
-
-
 
 @app.delete('/post_vote/{post_vote_id}')
 async def delete_post_vote(post_vote_id: int):

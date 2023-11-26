@@ -15,7 +15,6 @@ const Home = () => {
   const authInfo = useAuth();
   const { user, isLoggedIn } = authInfo;
   const [posts, setPosts] = useState([]);
-  console.log(posts)
   const [contentMap, setContentMap] = useState({});
   const [postID, setPostID] = useState("");
   useEffect(() => {
@@ -68,9 +67,8 @@ const Home = () => {
         }),
       });
       if (response.ok) {
-        const data = await response.json();
+        // const data = await response.json();
         window.location.reload(true)
-        console.log(data);
       } else {
         console.error("Failed to create comment");
       }
@@ -119,9 +117,9 @@ const Home = () => {
   const handleSortClick = (criteria) => {
     setSortCriteria(criteria);
   };
-  const handleVotePostUp = async (postId) => {
+  const handleVotePost = async (postId, type_vote) => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/post_vote/vote/?type_vote=up', {
+      const response = await fetch(`http://127.0.0.1:8000/post_vote/vote/?type_vote=${type_vote}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -145,46 +143,22 @@ const Home = () => {
       console.error("Error:", error);
     }
   }
-  const handleVotePostDown = async (postId) => {
-    try {
-      const response = await fetch('http://127.0.0.1:8000/post_vote/vote/?type_vote=down', {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_id: user.id,
-          post_id: postId,
-          upvote : 0,
-          downvote: 0
-        }),
-      });
-      if (response.ok) {
-        message.success("Vote success")
-        setTimeout(() => {
-          window.location.reload();
-        }, 500);
-      } else {
-        console.error("Vote failed");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  }
-  const handleCommentVote = async (commentId) => {
+  const handleCommentVote = async (commentId, type_vote) => {
     if(!isLoggedIn) {
       alert("Cannot vote comment. User is not logged in.");
       return;
     }
     try {
-      const response = await fetch("http://127.0.0.1:8000/comment_vote/", {
-        method: "POST",
+      const response = await fetch(`http://127.0.0.1:8000/comment_vote/vote/?type_vote=${type_vote}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           user_id: user.id,
           comment_id: commentId,
+          upvote: 0,
+          downvote: 0,
         }),
       });
       if (response.ok) {
@@ -367,11 +341,11 @@ const Home = () => {
                 </div>
                 <div className="content-post h-[60%] flex">
                   <div className="w-[5%] mr-6 font-bold flex flex-col items-center">
-                    <button className="w-fit" onClick={() => handleVotePostUp(post.id)}>
+                    <button className="w-fit" onClick={() => handleVotePost(post.id, "up")}>
                       <UpCircleOutlined />
                     </button>
                     {post.post_vote?.reduce((acc, vote) => acc + (vote.upvote - vote.downvote), 0) ?? 0}
-                    <button className="w-fit" onClick={() => handleVotePostDown(post.id)}>
+                    <button className="w-fit" onClick={() => handleVotePost(post.id, "down")}>
                       <DownCircleOutlined />
                     </button>
                   </div>
@@ -421,9 +395,12 @@ const Home = () => {
                             {comment.content}
                           </div>
                           <div className="vote font-bold flex flex-row items-center">
-                            <button className="w-fit" onClick={() => handleCommentVote(comment.id)}><UpCircleOutlined/></button>
-                            {post.comments.map((comment) => comment.comment_vote?.length ?? 0).reduce((acc, curr) => acc + curr, 0)}
-                            <button className="w-fit" onClick={() => handleCommentVote(comment.id)}><DownCircleOutlined/></button>
+                            <button className="w-fit" onClick={() => handleCommentVote(comment.id, "up")}><UpCircleOutlined/></button>
+                            {post.comments.map((comment) => comment.comment_vote?.reduce((acc, vote) => acc + vote.upvote, 0) ?? 0)
+                            .reduce((acc, curr) => acc + curr, 0)}
+                            <button className="w-fit" onClick={() => handleCommentVote(comment.id, "down")}><DownCircleOutlined/></button>
+                            {post.comments.map((comment) => comment.comment_vote?.reduce((acc, vote) => acc + vote.downvote, 0) ?? 0)
+                            .reduce((acc, curr) => acc + curr, 0)}
                           </div>
                         </div>
                       ))}
