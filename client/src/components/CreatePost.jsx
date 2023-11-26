@@ -12,7 +12,6 @@ const CreatePost = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedImages, setSelectedImages] = useState([]);
-
   const handleImageChange = (e) => {
     const files = e.target.files;
     if (files) {

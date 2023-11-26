@@ -7,6 +7,7 @@ import UpdatePost from "./components/UpdatePost";
 import AuthProvider from "./contexts/AuthContext";
 import Profile from "./components/Profile";
 import UpdateProfile from "./components/UpdateProfile";
+import VideoCall from "./components/VideoCall";
 function App() {
   return (
     <BrowserRouter>
@@ -19,6 +20,7 @@ function App() {
           <Route path="/update-post/:postId" element={<UpdatePost />} exact />
           <Route path="/profile" element={<Profile />} exact />
           <Route path="/update-profile" element={<UpdateProfile/>} />
+          <Route path="/video-call" element={<VideoCall/>} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

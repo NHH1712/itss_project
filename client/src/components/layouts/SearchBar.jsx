@@ -30,7 +30,6 @@ const SearchBar = () => {
         onKeyDown={handleKeyPress}
       >
       </input>
-      
     </div>
   );
 };

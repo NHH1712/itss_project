@@ -59,7 +59,6 @@ const Home = () => {
   tags.forEach((tag, index) => {
     tagColors[tag.id] = predefinedColors[index % predefinedColors.length];
   });
-  console.log(tagColors)
   const handleCreatePostClick = () => {
     if (isLoggedIn) {
       navigate("/create-post");
@@ -297,7 +296,7 @@ const Home = () => {
           </div>
           {sortedPosts.map((post) => (
             <div key={post.id} className="post-view bg-white mt-4 z-0">
-              <div className="h-[60vh] p-4 pb-4">
+              <div className="h-[80vh] p-4 pb-4">
                 <div className="header-post flex items-center h-[10%]">
                   <div className="user-icon mr-2">
                     <img
@@ -375,7 +374,7 @@ const Home = () => {
                     )}
                   </div>
                 </div>
-                <div className="content-post h-[60%] flex">
+                <div className="content-post h-[70%] flex">
                   <div className="w-[5%] mr-6 font-bold flex flex-col items-center">
                     <button className="w-fit" onClick={() => handleVotePost(post.id, "up")}>
                       <UpCircleOutlined />
@@ -390,7 +389,7 @@ const Home = () => {
                       {post.title}
                     </div>
                     <div className="description mb-1">{post.description}</div>
-                    <div className="image mb-1 w-fit h-[100px]">
+                    <div className="image mb-1 h-[250px] w-full">
                       {post.image_url && <img src={post.image_url} alt="image" className="max-w-full max-h-full"/>}
                       {/* {post.image_url} */}
                     </div>
@@ -402,7 +401,7 @@ const Home = () => {
                     </div>
                   </div>
                 </div>
-                <div className="comment-post h-[30%] flex">
+                <div className="comment-post h-[20%] flex">
                   <div className="border-l-2 border-gray-400">
                     <div className="h-20 overflow-y-auto">
                       {post.comments?.map((comment) => (
@@ -441,7 +440,7 @@ const Home = () => {
                         </div>
                       ))}
                     </div>
-                    <div className="text comment flex mt-4 ml-4">
+                    <div className="text comment flex mt-2 ml-4">
                       <img
                         // src="/social-media.png"
                         src={user?.avatar_url ? user.avatar_url : "/social-media.png"}
