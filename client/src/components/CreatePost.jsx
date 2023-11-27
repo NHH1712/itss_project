@@ -51,7 +51,7 @@ const CreatePost = () => {
         body: formData,
       });
       const responseUpload = await upload.json();
-      console.log(responseUpload)
+      // console.log(responseUpload)
       const response = await fetch(`http://localhost:8000/posts/user/${user.id}`, {
         method: 'POST',
         headers: {
@@ -62,7 +62,7 @@ const CreatePost = () => {
             user_id: user.id,
             title: title,
             description: description,
-            image_url: responseUpload.urls.map((url) => url.url).join(','),
+            image_url: responseUpload.urls[0],
             is_deleted: false
           },
           post_tags: tag.map(tag_id => ({ post_id: 0, tag_id: tag_id.id }))
