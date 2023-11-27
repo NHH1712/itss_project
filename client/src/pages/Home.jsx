@@ -195,26 +195,41 @@ const Home = () => {
       console.error("Error:", error);
     }
   };
+  const [searchValue, setSearchValue] = useState("");
+  const handleSearch = (searchValue) => {
+    setSearchValue(searchValue);
+    console.log(searchValue);
+  };
+  console.log(posts)
   const sortPosts = (posts) => {
     const filteredPosts = posts.filter(post => post.is_deleted != true);
-
+    const searchFilter = (post) => {
+      const searchTerm = searchValue.toLowerCase();
+      return (
+        post.post_tag?.some(tag => tag.tag.name.toLowerCase().includes(searchTerm)) ||
+        post.description.toLowerCase().includes(searchTerm) ||
+        post.title.toLowerCase().includes(searchTerm)
+      );
+    };
+    const searchFilteredPosts = filteredPosts.filter(searchFilter);
     switch (sortCriteria) {
       case "best":
-        return filteredPosts.sort((a, b) => b.id - a.id);
+        return searchFilteredPosts.sort((a, b) => b.id - a.id);
       case "hot":
-        return filteredPosts.sort((a, b) => b.post_vote?.length - a.post_vote?.length);
+        return searchFilteredPosts.sort((a, b) => b.post_vote?.length - a.post_vote?.length);
       case "new":
-        return filteredPosts.sort(
+        return searchFilteredPosts.sort(
           (a, b) => new Date(b.created_at) - new Date(a.created_at)
         );
       case "top":
-        return filteredPosts.sort(
+        return searchFilteredPosts.sort(
           (a, b) => (b.comments?.length ?? 0) - (a.comments?.length ?? 0)
         );
       default:
-        return filteredPosts;
+        return searchFilteredPosts;
     }
   };
+
   const sortedPosts = sortPosts(posts);
   const recentPosts = [...posts]
   .filter(post => isLoggedIn ? post.user_id === user.id : true) // Filter posts for the logged-in user
@@ -227,7 +242,7 @@ const Home = () => {
   .slice(0, 3);
   return (
     <div className="h-screen w-screen bg-gray-100 overflow-y-auto ">
-      <Header />
+      <Header onSearch={handleSearch}/>
       <div className="w-3/5 flex mt-4 mx-auto ">
         <div className="main-view-page w-2/3 mr-10">
           <div className="sticky z-10 top-[72px]">

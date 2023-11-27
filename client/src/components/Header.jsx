@@ -1,10 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
-import SearchBar from "./layouts/SearchBar";
 import { useAuth } from "../contexts/AuthContext";
-import { Button, Dropdown, Space, } from 'antd';
-import { DownOutlined} from '@ant-design/icons';
+import { Button, Dropdown, Space, Input} from 'antd';
+import { DownOutlined } from '@ant-design/icons';
 import { useLocation } from 'react-router-dom';
-const Header = () => {
+const Header = ({ onSearch }) => {
   const location = useLocation();
   const authInfo = useAuth();
   const navigate = useNavigate();
@@ -37,6 +36,11 @@ const Header = () => {
     items,
     onClick: handleMenuClick,
   };
+  const { Search } = Input;
+  const handleSearch = (value) => {
+    onSearch(value);
+  };
+
   return (
     <>
       <div className="bg-white h-14 flex items-center sticky top-0">
@@ -55,7 +59,10 @@ const Header = () => {
             VIDEO CALL
           </Link>
         </div>
-        <SearchBar />
+        {/* <SearchBar /> */}
+        <div className="w-full">
+          <Search placeholder="Search" allowClear style={{ width: '70%' }} onSearch={handleSearch}/>
+        </div>
         <div className="flex items-center text-center w-1/6">
           {isLoggedIn ? (
             <div className="flex items-center justify-center">
