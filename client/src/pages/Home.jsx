@@ -200,7 +200,6 @@ const Home = () => {
     setSearchValue(searchValue);
     console.log(searchValue);
   };
-  console.log(posts)
   const sortPosts = (posts) => {
     const filteredPosts = posts.filter(post => post.is_deleted != true);
     const searchFilter = (post) => {

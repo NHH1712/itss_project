@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi_sqlalchemy import DBSessionMiddleware, db
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import joinedload
@@ -20,10 +20,10 @@ from models import Tags as ModelTags
 from models import PostVote as ModelPostVote
 from models import Comments as ModelComments
 from models import Users as ModelUsers
-
+from models import Image as ModelImage
 import os
 from dotenv import load_dotenv
-
+import boto3
 from typing import List
 
 load_dotenv('.env')
@@ -37,7 +37,7 @@ origins = [
     "http://localhost:5173",
     "localhost:5173"
 ]
-
+s3 = boto3.client("s3", aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'], aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'], region_name=os.environ['AWS_REGION'])
 
 app.add_middleware(
     CORSMiddleware,
@@ -50,6 +50,26 @@ app.add_middleware(
 @app.get("/")
 async def root():
     return {"message": "hello world"}
+
+@app.post("/upload")
+async def upload_files(files: List[UploadFile] = File(...)):
+    try:
+        uploaded_urls = []
+
+        for file in files:
+            # Upload ảnh lên AWS S3
+            s3.upload_fileobj(file.file, os.environ['AWS_BUCKET_NAME'], file.filename)
+            # Lưu URL của ảnh vào PostgreSQL
+            db_image = ModelImage(url=f"https://{os.environ['AWS_BUCKET_NAME']}.s3.{os.environ['AWS_REGION']}.amazonaws.com/{file.filename}")
+            db.session.add(db_image)
+            db.session.commit()
+            uploaded_urls.append(db_image.url)
+
+        return {"message": "Upload successful", "urls": uploaded_urls}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post('/login')
 async def login(username: str, password: str):
     user = db.session.query(ModelUsers).filter(ModelUsers.username == username, ModelUsers.password == password).first()
@@ -168,6 +188,25 @@ async def post_by_user_id(user_id: int, post: SchemaPosts, post_tags: List[Schem
     db.session.commit()
     return new_post
 
+# @app.post('/posts/user/{user_id}', response_model=SchemaPosts)
+# async def post_by_user_id(user_id: int, post: SchemaPosts, post_tags: List[SchemaPostTag], image: UploadFile = File(...)):
+    try:
+        s3.upload_fileobj(image.file, os.environ['AWS_BUCKET_NAME'], image.filename)
+        image_url = f"https://{os.environ['AWS_BUCKET_NAME']}.s3.{os.environ['AWS_REGION']}.amazonaws.com/{image.filename}"
+        new_post = ModelPosts(user_id=user_id, title=post.title, description=post.description, image_url=image_url)
+        db.session.add(new_post)
+        db.session.commit()
+        for tag in post_tags:
+            post_tag = ModelPostTag(post_id=new_post.id, tag_id=tag.tag_id)
+            db.session.add(post_tag)
+        db.session.commit()
+        post_vote = ModelPostVote(user_id=user_id, post_id=new_post.id, upvote=0, downvote=0)
+        db.session.add(post_vote)
+        db.session.commit()
+
+        return new_post
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.put('/posts/{post_id}', response_model=SchemaPosts)
 async def update_post(post_id: int, post: SchemaPosts, post_tags: List[SchemaPostTag]):

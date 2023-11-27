@@ -16,6 +16,7 @@ const Profile = () => {
   const { user } = authInfo;
   const [posts, setPosts] = useState([]);
   const [showDeleted, setShowDeleted] = useState(false);
+  const [tags, setTags] = useState([]);
   const handleEditClick = (postId) => {
     navigate(`/update-post/${postId}`);
   };
@@ -35,6 +36,22 @@ const Profile = () => {
     };
 
     fetchPosts();
+  }, []);
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/tags/");
+        if (response.ok) {
+          const data = await response.json();
+          setTags(data);
+        } else {
+          console.error("Failed to fetch tags");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+    fetchTags();
   }, []);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -186,9 +203,35 @@ const Profile = () => {
       console.error("Error:", error);
     }
   };
+  const predefinedColors = [
+    '#FF5733', '#33FF57', '#5733FF', '#FF3364', '#33A0FF',
+    '#FFD133', '#FF33A5', '#33FFB2', '#8E33FF', '#FF8C33'
+  ];
+  const tagColors = {};
+  tags.forEach((tag, index) => {
+    tagColors[tag.id] = predefinedColors[index % predefinedColors.length];
+  });
+  const [searchValue, setSearchValue] = useState("");
+  const handleSearch = (searchValue) => {
+    setSearchValue(searchValue);
+    console.log(searchValue);
+  };
+  const searchPost = (posts) => {
+    const searchFilter = (post) => {
+      const searchTerm = searchValue.toLowerCase();
+      return (
+        post.post_tag?.some(tag => tag.tag.name.toLowerCase().includes(searchTerm)) ||
+        post.description.toLowerCase().includes(searchTerm) ||
+        post.title.toLowerCase().includes(searchTerm)
+      );
+    };
+    const searchPosts = posts.filter(searchFilter);
+    return searchPosts;
+  }
+  const searchPosts = searchPost(posts);
   return (
     <div className="w-screen h-screen bg-[#e7e5e4] overflow-y-auto">
-      <Header />
+      <Header onSearch={handleSearch}/>
       <div className="w-4/5 mx-auto mt-6 flex h-4/5 justify-between">
         <div className="post-view w-[70%] bg-white">
           <div className="h-14 border-b border-r">
@@ -254,6 +297,7 @@ const Profile = () => {
                               <div
                                 key={tag.id}
                                 className="tag text-xs mr-1 border border-gray-200 p-1 rounded-lg bg-neutral-700 text-white"
+                                style={{ backgroundColor: tagColors[tag.tag.id] }}
                               >
                                 {tag.tag.name}
                               </div>
@@ -453,6 +497,7 @@ const Profile = () => {
                               <div
                                 key={tag.id}
                                 className="tag text-xs mr-1 border border-gray-200 p-1 rounded-lg bg-neutral-700 text-white"
+                                style={{ backgroundColor: tagColors[tag.tag.id] }}
                               >
                                 {tag.tag.name}
                               </div>

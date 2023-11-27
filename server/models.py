@@ -93,3 +93,10 @@ class Users(Base):
     post_vote = relationship('PostVote', back_populates='user')
     comments = relationship('Comments', back_populates='user')
     comment_vote = relationship('CommentVote', back_populates='user')
+
+
+class Image(Base):
+    __tablename__ = "images"
+
+    id = Column(Integer, primary_key=True, index=True)
+    url = Column(String)

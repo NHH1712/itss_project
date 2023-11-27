@@ -8,6 +8,7 @@ import AuthProvider from "./contexts/AuthContext";
 import Profile from "./components/Profile";
 import UpdateProfile from "./components/UpdateProfile";
 import VideoCall from "./components/VideoCall";
+import Upload from "./components/Upload";
 function App() {
   return (
     <BrowserRouter>
@@ -21,6 +22,7 @@ function App() {
           <Route path="/profile" element={<Profile />} exact />
           <Route path="/update-profile" element={<UpdateProfile/>} />
           <Route path="/video-call" element={<VideoCall/>} />
+          <Route path="/upload" element={<Upload/>} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

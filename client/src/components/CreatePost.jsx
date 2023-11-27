@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useState, useEffect } from "react";
-import { PlusOutlined } from '@ant-design/icons';
-import { Select, Modal, message, Upload, Button } from 'antd';
+import { Select, message } from 'antd';
 const CreatePost = () => {
   const navigateTo = useNavigate();
   const authInfo = useAuth();
