@@ -11,14 +11,13 @@ const CreatePost = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedImages, setSelectedImages] = useState([]);
+  const [uploadImage, setUploadImage] = useState([]);
   const handleImageChange = (e) => {
     const files = e.target.files;
     if (files) {
-      const newImageUrls = Array.from(files).map((file) =>
-        URL.createObjectURL(file)
-      );
-
+      const newImageUrls = Array.from(files).map((file) => file.name);
       setSelectedImages((prevImages) => [...prevImages, ...newImageUrls]);
+      setUploadImage((prevImages) => [...prevImages, ...files]);
     }
   };
   useEffect(() => {
@@ -29,7 +28,7 @@ const CreatePost = () => {
           const data = await response.json();
           setTags(data);
         } else {
-          console.error("Failed to fetch user");
+          console.error("Failed to fetch tags");
         }
       } catch (error) {
         console.error("Error:", error);
@@ -41,6 +40,18 @@ const CreatePost = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const formData = new FormData();
+      console.log(uploadImage)
+      uploadImage.forEach((image) => {
+        formData.append('files', image);
+      });
+
+      const upload = await fetch('http://127.0.0.1:8000/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const responseUpload = await upload.json();
+      console.log(responseUpload)
       const response = await fetch(`http://localhost:8000/posts/user/${user.id}`, {
         method: 'POST',
         headers: {
@@ -51,7 +62,7 @@ const CreatePost = () => {
             user_id: user.id,
             title: title,
             description: description,
-            image_url: "",
+            image_url: responseUpload.urls.map((url) => url.url).join(','),
             is_deleted: false
           },
           post_tags: tag.map(tag_id => ({ post_id: 0, tag_id: tag_id.id }))

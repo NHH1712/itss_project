@@ -20,7 +20,6 @@ from models import Tags as ModelTags
 from models import PostVote as ModelPostVote
 from models import Comments as ModelComments
 from models import Users as ModelUsers
-from models import Image as ModelImage
 import os
 from dotenv import load_dotenv
 import boto3
@@ -52,18 +51,16 @@ async def root():
     return {"message": "hello world"}
 
 @app.post("/upload")
-async def upload_files(files: List[UploadFile] = File(...)):
+async def upload_files(files: List[UploadFile]):
     try:
         uploaded_urls = []
 
         for file in files:
             # Upload ảnh lên AWS S3
             s3.upload_fileobj(file.file, os.environ['AWS_BUCKET_NAME'], file.filename)
-            # Lưu URL của ảnh vào PostgreSQL
-            db_image = ModelImage(url=f"https://{os.environ['AWS_BUCKET_NAME']}.s3.{os.environ['AWS_REGION']}.amazonaws.com/{file.filename}")
-            db.session.add(db_image)
-            db.session.commit()
-            uploaded_urls.append(db_image.url)
+            # Lưu URL của ảnh vào danh sách uploaded_urls
+            uploaded_url = f"https://{os.environ['AWS_BUCKET_NAME']}.s3.{os.environ['AWS_REGION']}.amazonaws.com/{file.filename}"
+            uploaded_urls.append(uploaded_url)
 
         return {"message": "Upload successful", "urls": uploaded_urls}
     except Exception as e:
