@@ -59,20 +59,25 @@ const UpdatePost = () => {
     };
     fetchPost();
   }, [postId]);
+  const [updateImage, setUpdateImage] = useState();
+  useEffect(() => {
+    setUpdateImage(dataPost?.image_url);
+  }, [dataPost]);
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const formData = new FormData();
-      console.log(uploadImage);
       uploadImage.forEach((image) => {
         formData.append("files", image);
       });
-
-      const upload = await fetch("http://127.0.0.1:8000/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const responseUpload = await upload.json();
+      if(uploadImage.length != 0) {
+        const upload = await fetch("http://127.0.0.1:8000/upload", {
+          method: "POST",
+          body: formData,
+        });
+        const responseUpload = await upload.json();
+        setUpdateImage(responseUpload.urls[0]);
+      }
       const response = await fetch(
         `http://127.0.0.1:8000/posts/change/${postId}`,
         {
@@ -85,7 +90,7 @@ const UpdatePost = () => {
               user_id: user.id,
               title: dataPost.title,
               description: dataPost.description,
-              image_url: responseUpload.urls[0],
+              image_url: updateImage,
               is_deleted: false,
             },
             post_tags: dataPostTag.map((tag_id) => ({
