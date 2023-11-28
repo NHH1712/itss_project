@@ -260,7 +260,7 @@ const Profile = () => {
           </div>
           <div className="h-full">
             {showDeleted
-              ? posts
+              ? searchPosts
                   .filter(
                     (post) =>
                       post.is_deleted == true && post.user_id === user?.id
@@ -460,7 +460,7 @@ const Profile = () => {
                       <div className="bg-[#e7e5e4] h-2"></div>
                     </div>
                   ))
-              : posts
+              : searchPosts
                   .filter(
                     (post) =>
                       post.is_deleted != true && post.user_id === user?.id
