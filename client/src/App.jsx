@@ -20,7 +20,7 @@ function App() {
           <Route path="/create-post" element={<CreatePost />} exact />
           <Route path="/update-post/:postId" element={<UpdatePost />} exact />
           <Route path="/profile" element={<Profile />} exact />
-          <Route path="/update-profile" element={<UpdateProfile/>} />
+          <Route path="/update-profile/:profileId" element={<UpdateProfile/>} />
           <Route path="/video-call" element={<VideoCall/>} />
           <Route path="/upload" element={<Upload/>} />
         </Routes>

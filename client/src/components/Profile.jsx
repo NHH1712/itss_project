@@ -8,7 +8,7 @@ import {
   DownCircleOutlined,
   UpCircleOutlined,
 } from "@ant-design/icons";
-import { Modal, message } from "antd";
+import { Modal, message, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 const Profile = () => {
   const navigate = useNavigate();
@@ -229,6 +229,9 @@ const Profile = () => {
     return searchPosts;
   }
   const searchPosts = searchPost(posts);
+  const handleUpdateProfile = () => {
+    navigate(`/update-profile/${user.id}`);
+  }
   return (
     <div className="w-screen h-screen bg-[#e7e5e4] overflow-y-auto">
       <Header onSearch={handleSearch}/>
@@ -267,7 +270,7 @@ const Profile = () => {
                   )
                   .map((post) => (
                     <div key={post.id} className="post-view bg-white z-0">
-                      <div className="h-[60vh] p-4 ml-6 border-r">
+                      <div className="p-4 ml-6 h-14 border-b font-bold items-center flex-r">
                         <div className="header-post flex items-center h-[10%]">
                           <div className="user-icon mr-2">
                             <img
@@ -700,7 +703,7 @@ const Profile = () => {
             <span className="w-[90%] mx-auto">Info</span>
           </div>
           <div className="">
-            <div className="w-[90%] h-[30%] mt-4 mx-auto rounded p-1 border border-gray-200">
+            <div className="w-[90%] h-[40%] mt-4 mx-auto rounded p-1 border border-gray-200">
               <div className="mb-2">
                 <img
                   src={user?.avatar_url ? user.avatar_url : "/social-media.png"}
@@ -713,6 +716,11 @@ const Profile = () => {
               <div className="ml-2">
                 Lớp: {user?.classname} - {user?.grade}
               </div>
+            </div>
+            <div className="w-full mt-2 flex justify-center items-center">
+              <Button type="primary" icon={<EditOutlined />} size={"large"} style={{color: '#000'}} onClick={() => handleUpdateProfile()} >
+                Edit
+              </Button>
             </div>
           </div>
         </div>
