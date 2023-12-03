@@ -310,8 +310,8 @@ const Home = () => {
           </div>
           {sortedPosts.map((post) => (
             <div key={post.id} className="post-view bg-white mt-4 z-0">
-              <div className="h-[80vh] p-4 pb-4">
-                <div className="header-post flex items-center h-[10%]">
+              <div className="p-4 pb-4">
+                <div className="header-post flex items-center">
                   <div className="user-icon mr-2">
                     <img
                       // src="/social-media.png"
@@ -335,7 +335,7 @@ const Home = () => {
                     {post.post_tag?.map((tag) => (
                       <div
                         key={tag.id}
-                        className="tag text-xs mr-1 border border-gray-200 p-1 rounded-lg bg-neutral-700 text-white"
+                        className="tag text-xs mr-1 border border-gray-200 p-1 rounded-lg bg-neutral-700 text-white font-bold"
                         style={{ backgroundColor: tagColors[tag.tag.id] }}
                       >
                         {tag.tag.name}
@@ -388,12 +388,16 @@ const Home = () => {
                     )}
                   </div>
                 </div>
-                <div className="content-post h-[70%] flex">
+                <div className="content-post flex">
                   <div className="w-[5%] mr-6 font-bold flex flex-col items-center">
                     <button className="w-fit" onClick={() => handleVotePost(post.id, "up")}>
                       <UpCircleOutlined />
                     </button>
-                    {post.post_vote?.reduce((acc, vote) => acc + (vote.upvote - vote.downvote), 0) ?? 0}
+                    {/* {post.post_vote?.reduce((acc, vote) => acc + (vote.upvote - vote.downvote), 0) ?? 0} */}
+                    <span>
+                      {post.post_vote?.reduce((acc, vote) => acc + (vote.upvote - vote.downvote), 0) > 0 ? "+" : ""}
+                      {post.post_vote?.reduce((acc, vote) => acc + (vote.upvote - vote.downvote), 0) ?? 0}
+                    </span>
                     <button className="w-fit" onClick={() => handleVotePost(post.id, "down")}>
                       <DownCircleOutlined />
                     </button>
@@ -403,9 +407,8 @@ const Home = () => {
                       {post.title}
                     </div>
                     <div className="description mb-1">{post.description}</div>
-                    <div className="image mb-1 h-[250px] w-full">
-                      {post.image_url && <img src={post.image_url} alt="image" className="max-w-full max-h-full"/>}
-                      {/* {post.image_url} */}
+                    <div className="image mb-1 w-full">
+                      {post.image_url && <img src={post.image_url} alt="image" className="h-[200px] w-[300px] object-scale-down"/>}
                     </div>
                     <div className="comment flex">
                       <img src="/cmt.png"></img>
@@ -415,8 +418,9 @@ const Home = () => {
                     </div>
                   </div>
                 </div>
-                <div className="comment-post h-[20%] flex">
+                <div className="comment-post flex mt-2">
                   <div className="border-l-2 border-gray-400">
+                    {post.comments?.length > 0 && (
                     <div className="h-20 overflow-y-auto">
                       {post.comments?.map((comment) => (
                         <div key={comment.id} className="comment-item ml-4">
@@ -454,6 +458,7 @@ const Home = () => {
                         </div>
                       ))}
                     </div>
+                    )}
                     <div className="text comment flex mt-2 ml-4">
                       <img
                         // src="/social-media.png"
@@ -485,18 +490,17 @@ const Home = () => {
             </div>
           ))}
         </div>
-        <div className="recent-post w-1/3 bg-white p-4 h-[60vh]">
+        <div className="recent-post w-1/3 bg-white p-4 sticky top-[72px] h-min">
           <div>
             <p className="font-bold text-black">RECENT POST</p>
           </div>
           {isLoggedIn && (
             <div>
               {recentPosts.map((post) => (
-                <div key={post.id} className="post-item flex mt-4 h-[15vh]">
+                <div key={post.id} className="post-item flex mt-4">
                   <div className="">
                     <div className="flex">
                       <img
-                        // src="/social-media.png"
                         src={post.user?.avatar_url ? post.user.avatar_url : "/social-media.png"}
                         alt="user icon"
                         width={24}
@@ -506,8 +510,11 @@ const Home = () => {
                     </div>
                     <div className="mt-1">
                       <div className="font-bold">{post.title}</div>
-                      <div className="truncate w-[250px]">
+                      <div className="truncate">
                         {post.description}
+                      </div>
+                      <div>
+                      {post.image_url && <img src={post.image_url} alt="image" className=""/>}
                       </div>
                       <div className="flex justify-end">
                         <div className="text-xs mr-1">

@@ -270,8 +270,8 @@ const Profile = () => {
                   )
                   .map((post) => (
                     <div key={post.id} className="post-view bg-white z-0">
-                      <div className="p-4 ml-6 h-14 border-b font-bold items-center flex-r">
-                        <div className="header-post flex items-center h-[10%]">
+                      <div className="p-4 ml-6 border-b items-center flex-r ">
+                        <div className="header-post flex items-center">
                           <div className="user-icon mr-2">
                             <img
                               src={
@@ -315,7 +315,7 @@ const Profile = () => {
                             </button>
                           </div>
                         </div>
-                        <div className="content-post h-[60%] flex">
+                        <div className="content-post flex">
                           <div className="w-[5%] mr-6 font-bold flex flex-col items-center">
                             <button
                               className="w-fit"
@@ -323,11 +323,10 @@ const Profile = () => {
                             >
                               <UpCircleOutlined />
                             </button>
-                            {post.post_vote?.reduce(
-                              (acc, vote) =>
-                                acc + (vote.upvote - vote.downvote),
-                              0
-                            ) ?? 0}
+                            <span>
+                              {post.post_vote?.reduce((acc, vote) => acc + (vote.upvote - vote.downvote), 0) > 0 ? "+" : ""}
+                              {post.post_vote?.reduce((acc, vote) => acc + (vote.upvote - vote.downvote), 0) ?? 0}
+                            </span>
                             <button
                               className="w-fit"
                               onClick={() => handleVotePost(post.id, "down")}
@@ -341,6 +340,9 @@ const Profile = () => {
                             </div>
                             <div className="description mb-1">
                               {post.description}
+                            </div>
+                            <div className="image mb-1 w-full">
+                              {post.image_url && <img src={post.image_url} alt="image" className="h-[200px] w-[300px] object-scale-down"/>}
                             </div>
                             <div className="image mb-1">{post.image}</div>
                             <div className="comment flex">
@@ -443,7 +445,7 @@ const Profile = () => {
                               <input
                                 type="text"
                                 key={post.id}
-                                className="p-1 border border-gray-400 ml-2 rounded-lg w-[60vh]"
+                                className="p-1 border border-gray-400 ml-2 rounded-lg w-[90vh]"
                                 placeholder="Send message"
                                 id={post.id}
                                 value={contentMap[post.id] || ""}
@@ -470,8 +472,8 @@ const Profile = () => {
                   )
                   .map((post) => (
                     <div key={post.id} className="post-view bg-white z-0">
-                      <div className="h-[60vh] p-4 ml-6 border-r">
-                        <div className="header-post flex items-center h-[10%]">
+                      <div className="p-4 border-r">
+                        <div className="header-post flex items-center">
                           <div className="user-icon mr-2">
                             <img
                               src={
@@ -551,7 +553,7 @@ const Profile = () => {
                             </>
                           </div>
                         </div>
-                        <div className="content-post h-[60%] flex">
+                        <div className="content-post flex">
                           <div className="w-[5%] mr-6 font-bold flex flex-col items-center">
                             <button
                               className="w-fit"
@@ -559,11 +561,10 @@ const Profile = () => {
                             >
                               <UpCircleOutlined />
                             </button>
-                            {post.post_vote?.reduce(
-                              (acc, vote) =>
-                                acc + (vote.upvote - vote.downvote),
-                              0
-                            ) ?? 0}
+                            <span>
+                              {post.post_vote?.reduce((acc, vote) => acc + (vote.upvote - vote.downvote), 0) > 0 ? "+" : ""}
+                              {post.post_vote?.reduce((acc, vote) => acc + (vote.upvote - vote.downvote), 0) ?? 0}
+                            </span>
                             <button
                               className="w-fit"
                               onClick={() => handleVotePost(post.id, "down")}
@@ -578,6 +579,9 @@ const Profile = () => {
                             <div className="description mb-1">
                               {post.description}
                             </div>
+                            <div className="image mb-1 w-full">
+                              {post.image_url && <img src={post.image_url} alt="image" className="h-[200px] w-[300px] object-scale-down"/>}
+                            </div>
                             <div className="image mb-1">{post.image}</div>
                             <div className="comment flex">
                               <img src="/cmt.png"></img>
@@ -587,8 +591,9 @@ const Profile = () => {
                             </div>
                           </div>
                         </div>
-                        <div className="comment-post h-[30%] flex">
+                        <div className="comment-post flex mt-2">
                           <div className="border-l-2 border-gray-400">
+                            {post.comments?.length > 0 && (
                             <div className="h-20 overflow-y-auto">
                               {post.comments?.map((comment) => (
                                 <div
@@ -661,6 +666,7 @@ const Profile = () => {
                                 </div>
                               ))}
                             </div>
+                            )}
                             <div className="text comment flex mt-4 ml-4">
                               <img
                                 // src="/social-media.png"
@@ -676,7 +682,7 @@ const Profile = () => {
                               <input
                                 type="text"
                                 key={post.id}
-                                className="p-1 border border-gray-400 ml-2 rounded-lg w-[60vh]"
+                                className="p-1 border border-gray-400 ml-2 rounded-lg w-[90vh]"
                                 placeholder="Send message"
                                 id={post.id}
                                 value={contentMap[post.id] || ""}

@@ -92,11 +92,11 @@ const CreatePost = () => {
           <span className="font-bold">{user?.name}</span>
         </div>
       </div>
-      <div className="create post w-3/5 h-[90%] mx-auto mt-4">
+      <div className="create post w-3/5 h-[85%] mx-auto mt-4">
         <div className="text-3xl">
           Create a new post
         </div>
-        <div className="h-1 bg-white my-4"></div>
+        <div className="h-1 bg-white my-2"></div>
           <Select
             mode="multiple"
             allowClear
@@ -114,13 +114,13 @@ const CreatePost = () => {
               onChange = {(e) => setTitle(e.target.value)}
               type="text" className="w-full border border-gray-300 flex items-center p-2 rounded-lg" required></input>
           </div>
-          <div className="h-1/2 mb-1">
+          <div className="h-[50%] mb-1">
             <span>Description</span><span className="text-red-600 ml-1">*</span>
             <textarea 
               onChange={(e) => setDescription(e.target.value)}
-              type="text" className="w-full border border-gray-300 flex items-center p-2 h-full rounded-lg" required></textarea>
+              type="text" className="w-full border border-gray-300 flex items-center p-2 rounded-lg h-[90%]" required></textarea>
           </div>
-          <div className="mt-6 mb-4">
+          <div className="mb-1">
             <span>Image</span>
             <div className="">
               <div className="flex flex-col items-start overflow-auto">
@@ -136,7 +136,7 @@ const CreatePost = () => {
                       key={index}
                       src={image}
                       alt="Uploaded"
-                      className="w-[30px] h-[30px] mx-2"
+                      className="w-[40px] h-[40px] mx-2"
                     />
                   ))}
                 </div>
@@ -144,7 +144,7 @@ const CreatePost = () => {
             </div>
           </div>
           
-          <div className="h-1 bg-[#d9d9d9] mb-4"></div>
+          <div className="h-1 bg-[#d9d9d9] mb-2"></div>
           <div className="flex items-center text-center justify-end">
             <button
               to="/"
