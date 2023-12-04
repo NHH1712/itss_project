@@ -110,16 +110,17 @@ const Home = () => {
     setIsModalOpen(true);
   };
   const handleOk = () => {
-    setIsModalOpen(false);
     confirmDeleteRef.current = true;
+    setIsModalOpen(false);
   };
   const handleCancel = () => {
-    setIsModalOpen(false);
     confirmDeleteRef.current = false;
+    setIsModalOpen(false);  
   };
   const handleDelete = async (postId) => {
     showModal();
-
+    console.log(confirmDeleteRef.current)
+    if(!confirmDeleteRef.current) return;
     try {
       const response = await fetch(`http://127.0.0.1:8000/delete/posts/${postId}`, {
         method: "DELETE",
@@ -240,6 +241,11 @@ const Home = () => {
     return dateB - dateA;
   })
   .slice(0, 3);
+  const customStyles = {
+    mask: {
+      opacity: '0.2',
+    },
+  };
   return (
     <div className="h-screen w-screen bg-gray-100 overflow-y-auto ">
       <Header onSearch={handleSearch}/>
@@ -346,21 +352,21 @@ const Home = () => {
                   <div className="flex">
                     {isLoggedIn && post.user_id === user?.id && (
                       <>
-                        <button
-                          onClick={() =>
-                            handleEditClick(post.id, post.post_tag)
-                          }
-                        >
+                        <button onClick={() => handleEditClick(post.id, post.post_tag)}>
                           <EditOutlined />
                         </button>
                         <button onClick={() => handleDelete(post.id)}>
                           <DeleteOutlined />
                         </button>
+                        {/* <button onClick={handleDelete}>
+                          <DeleteOutlined/>
+                        </button> */}
                         <Modal
                           title="Are you sure about that"
                           open={isModalOpen}
                           onOk={handleOk}
                           onCancel={handleCancel}
+                          styles={customStyles}
                           okButtonProps={{
                             style: {
                               background: "#DC2626",

@@ -1,6 +1,6 @@
 import Header from "./Header";
 import { useAuth } from "../contexts/AuthContext";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { formatDistanceToNow } from "date-fns";
 import {
   DeleteOutlined,
@@ -54,39 +54,34 @@ const Profile = () => {
     fetchTags();
   }, []);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
+  const confirmDeleteRef = useRef(false);
   const showModal = () => {
     setIsModalOpen(true);
   };
   const handleOk = () => {
+    confirmDeleteRef.current = true;
     setIsModalOpen(false);
-    setConfirmDelete(true);
   };
   const handleCancel = () => {
-    setIsModalOpen(false);
-    setConfirmDelete(false);
+    confirmDeleteRef.current = false;
+    setIsModalOpen(false);  
   };
   const handleDelete = async (postId) => {
-    // showModal();
-    // if (!confirmDelete) return;
+    showModal();
+    console.log(confirmDeleteRef.current)
+    if(!confirmDeleteRef.current) return;
     try {
-      const response = await fetch(
-        `http://127.0.0.1:8000/delete/posts/${postId}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            is_deleted: true,
-          }),
-        }
-      );
+      const response = await fetch(`http://127.0.0.1:8000/delete/posts/${postId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          is_deleted: true,
+        }),
+      });
       if (response.ok) {
-        message.success("Delete success");
-        setTimeout(() => {
-          window.location.reload();
-        }, 500);
+        window.location.reload(true)
       } else {
         console.error("Delete failed");
       }
@@ -232,6 +227,11 @@ const Profile = () => {
   const handleUpdateProfile = () => {
     navigate(`/update-profile/${user.id}`);
   }
+  const customStyles = {
+    mask: {
+      opacity: '0.2',
+    },
+  };
   return (
     <div className="w-screen h-screen bg-[#e7e5e4] overflow-y-auto">
       <Header onSearch={handleSearch}/>
@@ -525,6 +525,7 @@ const Profile = () => {
                                 open={isModalOpen}
                                 onOk={handleOk}
                                 onCancel={handleCancel}
+                                styles={customStyles}
                                 okButtonProps={{
                                   style: {
                                     background: "#DC2626",
