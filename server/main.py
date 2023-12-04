@@ -57,7 +57,9 @@ async def upload_files(files: List[UploadFile]):
 
         for file in files:
             # Upload ảnh lên AWS S3
-            s3.upload_fileobj(file.file, os.environ['AWS_BUCKET_NAME'], file.filename)
+            s3.upload_fileobj(file.file, os.environ['AWS_BUCKET_NAME'], file.filename,  ExtraArgs={
+                    'ContentType': file.content_type,
+                })
             # Lưu URL của ảnh vào danh sách uploaded_urls
             uploaded_url = f"https://{os.environ['AWS_BUCKET_NAME']}.s3.{os.environ['AWS_REGION']}.amazonaws.com/{file.filename}"
             uploaded_urls.append(uploaded_url)
