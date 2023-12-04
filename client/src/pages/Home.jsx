@@ -9,7 +9,7 @@ import {
   UpCircleOutlined,
   DownCircleOutlined,
 } from "@ant-design/icons";
-import { Modal, message } from "antd";
+import { Modal, message, Empty } from "antd";
 const Home = () => {
   const navigate = useNavigate();
   const authInfo = useAuth();
@@ -119,6 +119,7 @@ const Home = () => {
   };
   const handleDelete = async (postId) => {
     showModal();
+
     try {
       const response = await fetch(`http://127.0.0.1:8000/delete/posts/${postId}`, {
         method: "DELETE",
@@ -245,7 +246,7 @@ const Home = () => {
       <div className="w-3/5 flex mt-4 mx-auto ">
         <div className="main-view-page w-2/3 mr-10">
           <div className="sticky z-10 top-[72px]">
-            <div className="h-14 bg-white p-2 mb-4 flex">
+            <div className="h-14 bg-white p-2 border border-gray-100 flex rounded">
               {isLoggedIn ? (
                 <img src={user?.avatar_url ? user.avatar_url : "/social-media.png"} alt="icon" className="mx-2" />
               ) : (
@@ -261,7 +262,7 @@ const Home = () => {
             </div>
           </div>
 
-          <div className="filter bg-white py-2 sticky top-[144px] z-10">
+          <div className="filter bg-white py-2 sticky top-[128px] z-10 border border-gray-100 flex rounded">
             <div className="flex ml-10">
               <div className="mr-2">
                 <button
@@ -496,7 +497,10 @@ const Home = () => {
           </div>
           {isLoggedIn && (
             <div>
-              {recentPosts.map((post) => (
+              {recentPosts.length === 0 ? (
+                <div className=""><Empty/></div>
+              ) : (
+              recentPosts.map((post) => (
                 <div key={post.id} className="post-item flex mt-4">
                   <div className="">
                     <div className="flex">
@@ -528,7 +532,7 @@ const Home = () => {
                     </div>
                   </div>
                 </div>
-              ))}
+              )))}
             </div>
           )}
         </div>

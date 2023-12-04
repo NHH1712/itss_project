@@ -59,10 +59,6 @@ const UpdatePost = () => {
     };
     fetchPost();
   }, [postId]);
-  const [updateImage, setUpdateImage] = useState();
-  useEffect(() => {
-    setUpdateImage(dataPost?.image_url);
-  }, [dataPost]);
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -76,9 +72,40 @@ const UpdatePost = () => {
           body: formData,
         });
         const responseUpload = await upload.json();
-        setUpdateImage(responseUpload.urls[0]);
-      }
-      const response = await fetch(
+        const response = await fetch(
+          `http://127.0.0.1:8000/posts/change/${postId}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              post: {
+                user_id: user.id,
+                title: dataPost.title,
+                description: dataPost.description,
+                image_url: responseUpload.urls[0],
+                is_deleted: false,
+              },
+              post_tags: dataPostTag.map((tag_id) => ({
+                post_id: 0,
+                tag_id: tag_id.id,
+              })),
+            }),
+          }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          if (data) {
+            message.success("update success");
+            navigateTo("/");
+          }
+        } else {
+          console.error("Update failed");
+        }
+      }else{
+        const response = await fetch(
         `http://127.0.0.1:8000/posts/change/${postId}`,
         {
           method: "PUT",
@@ -90,7 +117,7 @@ const UpdatePost = () => {
               user_id: user.id,
               title: dataPost.title,
               description: dataPost.description,
-              image_url: updateImage,
+              image_url: dataPost.image_url,
               is_deleted: false,
             },
             post_tags: dataPostTag.map((tag_id) => ({
@@ -100,15 +127,16 @@ const UpdatePost = () => {
           }),
         }
       );
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-        if (data) {
-          message.success("update success");
-          navigateTo("/");
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          if (data) {
+            message.success("update success");
+            navigateTo("/");
+          }
+        } else {
+          console.error("Update failed");
         }
-      } else {
-        console.error("Update failed");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -139,9 +167,9 @@ const UpdatePost = () => {
             <span className="font-bold">{user?.name}</span>
           </div>
         </div>
-        <div className="create post w-3/5 h-[90%] mx-auto mt-4">
+        <div className="create post w-3/5 h-[85%] mx-auto mt-4">
           <div className="text-3xl">Update Post</div>
-          <div className="h-1 bg-white my-4"></div>
+          <div className="h-1 bg-white my-2"></div>
           {dataPost ? (
             <Select
               mode="multiple"
@@ -176,7 +204,7 @@ const UpdatePost = () => {
             <p>Loading...</p>
           )}
           <div className="bg-white h-4/5 px-4 py-2 rounded">
-            <div className="mb-2">
+            <div className="mb-1">
               <span>Title</span>
               <span className="text-red-600 ml-1">*</span>
               <input
@@ -191,7 +219,7 @@ const UpdatePost = () => {
                 className="w-full border border-gray-300  flex items-center p-2 rounded-lg"
               ></input>
             </div>
-            <div className="h-1/2 mb-2">
+            <div className="h-[50%] mb-1">
               <span>Description</span>
               <span className="text-red-600 ml-1">*</span>
               <textarea
@@ -203,19 +231,19 @@ const UpdatePost = () => {
                   }))
                 }
                 type="text"
-                className="w-full border border-gray-300  flex items-center p-2 h-full rounded-lg"
+                className="w-full border border-gray-300  flex items-center p-2 h-[90%] rounded-lg"
               ></textarea>
             </div>
             {/* <div className="border border-[#DAE0E6] mt-10 mb-4 w-1/6 rounded-2xl">
             <button className="w-full"> + Image</button>
           </div> */}
-            <div className="mt-10 mb-4 w-full flex">
+            <div className="mb-1 w-full flex mt-4">
               {!isEditImage ? (
                 <>
                   <img
                     src={dataPost?.image_url}
                     alt="post"
-                    className="h-[100px] w-[100px] object-cover"
+                    className="h-[60px] w-[60px] object-cover"
                   ></img>
                   <Button
                     style={{ border: 0 }}
