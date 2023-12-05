@@ -8,7 +8,7 @@ import {
   DownCircleOutlined,
   UpCircleOutlined,
 } from "@ant-design/icons";
-import { Modal, message, Button } from "antd";
+import { Modal, message, Button, Empty } from "antd";
 import { useNavigate } from "react-router-dom";
 const Profile = () => {
   const navigate = useNavigate();
@@ -710,16 +710,20 @@ const Profile = () => {
             <span className="w-[90%] mx-auto">Info</span>
           </div>
           <div className="">
-            <div className="w-[90%] h-[40%] mt-4 mx-auto rounded p-1 border border-gray-200">
-              <div className="mb-2">
+            <div className="w-[90%] mt-4 mx-auto rounded p-1 border border-gray-200">
+              <div className="mb-2 relative">
                 <img
                   src={user?.avatar_url ? user.avatar_url : "/social-media.png"}
-                  width={48}
-                  height={48}
+                  className="h-[150] w-[150px] object-scale-down rounded-full absolute left-[10%] top-[50%] "
+                  alt=""
+                />
+                <img
+                  src={user?.cover_image_url ? user.cover_image_url : "/social-media.png"}
+                  className="h-[150px] w-full object-scale-down"
                   alt=""
                 />
               </div>
-              <div className="ml-2">{user?.name}</div>
+              <div className="ml-2 pt-4">{user?.name}</div>
               <div className="ml-2">
                 Lớp: {user?.classname} - {user?.grade}
               </div>

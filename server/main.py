@@ -92,8 +92,6 @@ async def user(user: SchemaUsers):
 async def update_user(user_id: int, user: SchemaUsers):
     db_user = db.session.query(ModelUsers).filter(ModelUsers.id == user_id).first()
     db_user.name = user.name
-    db_user.username = user.username
-    db_user.password = user.password
     db_user.classname = user.classname
     db_user.grade = user.grade
     db_user.avatar_url = user.avatar_url

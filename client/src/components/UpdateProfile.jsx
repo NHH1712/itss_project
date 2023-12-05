@@ -1,10 +1,17 @@
 import { useAuth } from "../contexts/AuthContext";
-import { Select, message, Input } from "antd";
-import { useState } from "react";
+import { Button, Dropdown, Space, Input, Select, message} from 'antd';
+import { DownOutlined } from '@ant-design/icons';
+import { useState, useRef } from "react";
 import { EditOutlined } from "@ant-design/icons";
+import { Link, useNavigate } from "react-router-dom";
+
 const UpdateProfile = () => {
-  const { user } = useAuth();
-  console.log(user);
+  const authInfo = useAuth();
+  const navigateTo = useNavigate();
+  const {user, isLoggedIn, logout } = authInfo
+    ? authInfo
+    : { isLoggedIn: false, logout: () => {} };
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: user.name,
     classname: user.classname,
@@ -12,30 +19,144 @@ const UpdateProfile = () => {
     avatar_url: user.avatar_url,
     cover_image_url: user.cover_image_url,
   });
+  const handleMenuClick = (e) => {
+    switch (e.key) {
+      case '1': 
+        navigate('/profile');
+        break;
+      case '2':
+        logout();
+        break;
+      default:
+        break;
+    }
+  };
+  const items = [
+    {
+      label: 'Profile',
+      key: '1',
+    },
+    {
+      label: 'Log out',
+      key: '2',
+    },
+  ];
+  const menuProps = {
+    items,
+    onClick: handleMenuClick,
+  };
+  const fileAvatarRef = useRef(null);
+  const fileCoverRef = useRef(null);
+  const handleEditAvatar = () => {
+    fileAvatarRef.current.click();
+  };
+  const handleEditCover = () => {
+    fileCoverRef.current.click();
+  };
+  const handleAvatarChange = async (event) => {
+    const selectedFile = event.target.files[0];
+    const formDataAvatar = new FormData();
+    formDataAvatar.append("files", selectedFile);
+    if(selectedFile.length != 0) {
+      const upload = await fetch("http://127.0.0.1:8000/upload", {
+        method: "POST",
+        body: formDataAvatar,
+      });
+      const responseUpload = await upload.json();
+      setFormData({ ...formData, avatar_url: responseUpload.urls[0] });
+    }
+  };
+  const handleCoverChange = async (event) => {
+    const selectedFile = event.target.files[0];
+    const formDataCover = new FormData();
+    formDataCover.append("files", selectedFile);
+    if(selectedFile.length != 0) {
+      const upload = await fetch("http://127.0.0.1:8000/upload", {
+        method: "POST",
+        body: formDataCover,
+      });
+      const responseUpload = await upload.json();
+      setFormData({ ...formData, cover_image_url: responseUpload.urls[0] });
+    }
+  }
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/users/${user.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            username: "",
+            password: "",
+            classname: formData.classname,
+            grade: formData.grade,
+            avatar_url: formData.avatar_url,
+            cover_image_url: formData.cover_image_url,
+          }),
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        if (data) {
+          message.success("update success");
+          setTimeout(() => {
+            navigateTo("/");
+          }, 4000);  
+        }
+      } else {
+        console.error("Update failed");
+      }
+    }catch (error) {
+      console.error("Error:", error);
+    }
   };
+  console.log(formData)
   return (
     <form onSubmit={handleSubmit}>
       <div className="w-screen h-screen bg-[#e7e5e4]">
         <div className="bg-white h-14 flex items-center justify-between">
           <div className="font-bold text-[20px] leading-5 pl-6">HEDSOCIAL</div>
-          <div className="flex mr-10">
-            <img
-              src={user?.avatar_url ? user.avatar_url : "/social-media.png"}
-              alt="user"
-              width={20}
-              height={20}
-              className="mr-2"
-            ></img>
-            <span className="font-bold">{user?.name}</span>
+          <div className="flex items-center text-center w-1/6">
+            {isLoggedIn ? (
+              <div className="flex items-center justify-center">
+                <Space wrap>
+                  <Dropdown menu={menuProps} className="border-0 shadow-none">
+                    <Button>
+                      <Space>
+                        <img
+                          src={user?.avatar_url ? user.avatar_url : "/social-media.png"}
+                          alt="user"
+                          width={24}
+                          height={24}
+                          className="mr-2"
+                        />
+                        <span className="font-bold mr-4">{user?.name}</span>
+                        <DownOutlined />
+                      </Space>
+                    </Button>
+                  </Dropdown>
+                </Space>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="bg-[#0e64d2] text-white rounded-lg px-4 py-2"
+              >
+                Login
+              </Link>
+            )}
           </div>
         </div>
-        <div className="create post w-3/5 h-[90%] mx-auto mt-4">
+        <div className="create post w-3/5 h-[85%] mx-auto mt-4">
           <div className="text-3xl">Update Profile</div>
-          <div className="h-1 bg-white my-4"></div>
-          <div className="bg-white h-[90%] px-8 py-4 rounded-lg">
+          <div className="h-1 bg-white my-3"></div>
+          <div className="bg-white h-[80%] px-8 py-4 rounded-lg">
             <div className=" mx-auto">
               <div>
                 Name <span className="text-red-600">*</span>
@@ -103,16 +224,42 @@ const UpdateProfile = () => {
                 ]}
               />
             </div>
-            <div>
-              <div>Avatar <EditOutlined/></div> 
-              <div>
-                <img src={user.avatar_url} alt="avatar" width={24} height={24}></img>
+
+            <div className="flex mb-2 justify-between h-1/3">
+              <div className="w-1/4">
+                <div>Avatar
+                  <button type="button" onClick={handleEditAvatar}><EditOutlined/></button>
+                  <input
+                    type="file"
+                    ref={fileAvatarRef}
+                    style={{ display: "none" }}
+                    onChange={handleAvatarChange}
+                  />
+                </div> 
+                <div>
+                  <img src={formData?.avatar_url ? formData.avatar_url : "/social-media.png"} alt="avatar" className="h-[100px] w-[200px] object-scale-down"></img>
+                </div>
+              </div>
+              <div className="w-1/2">
+                <div>Cover 
+                  <button type="button" onClick={handleEditCover}><EditOutlined/></button>
+                  <input
+                    type="file"
+                    ref={fileCoverRef}
+                    style={{ display: "none" }}
+                    onChange={handleCoverChange}
+                  />
+                </div> 
+                <div>
+                  <img src={formData?.cover_image_url ? formData.cover_image_url : "/social-media.png"} alt="cover" className="h-[100px] w-[200px] object-scale-down"></img>
+                </div>
               </div>
             </div>
-            <div className="flex items-center text-center justify-end">
+            <div className="h-[2px] bg-gray-200"></div>
+            <div className="flex items-center text-center justify-end mt-4">
               <button
-                to="/"
                 className="bg-[#0e64d2] text-white rounded-lg px-4 py-2"
+                // onSubmit={handleSubmit}
               >
                 Update
               </button>
