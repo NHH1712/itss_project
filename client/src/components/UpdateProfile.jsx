@@ -107,7 +107,7 @@ const UpdateProfile = () => {
           message.success("update success");
           setTimeout(() => {
             navigateTo("/");
-          }, 4000);  
+          }, 5000);  
         }
       } else {
         console.error("Update failed");

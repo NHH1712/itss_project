@@ -531,8 +531,15 @@ const Home = () => {
                           {post.comments?.length ?? 0} Comments -{" "}
                         </div>
                         <div className="text-xs">
-                          Posted at{" "}
-                          {formatDistanceToNow(new Date(post.created_at))} ago
+                          {post?.updated_at && new Date(post.updated_at) > new Date(post.created_at) ? (
+                            <>
+                              Updated at {formatDistanceToNow(new Date(post.updated_at))} ago
+                            </>
+                          ) : (
+                            <>
+                              Posted at {formatDistanceToNow(new Date(post.created_at))} ago
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>

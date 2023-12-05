@@ -718,16 +718,23 @@ const Profile = () => {
           <div className="">
             <div className="w-[90%] mt-4 mx-auto rounded p-1 border border-gray-200">
               <div className="mb-2 relative">
-                <img
-                  src={user?.avatar_url ? user.avatar_url : "/social-media.png"}
-                  className="h-[150] w-[150px] object-scale-down rounded-full absolute left-[10%] top-[50%] "
-                  alt=""
-                />
-                <img
-                  src={user?.cover_image_url ? user.cover_image_url : "/social-media.png"}
-                  className="h-[150px] w-full object-scale-down"
-                  alt=""
-                />
+                {user?.avatar_url && (
+                  <img
+                    src={user.avatar_url}
+                    className={`h-[100px] w-[100px] object-scale-down rounded-full ${
+                      user.cover_image_url ? 'absolute left-[15%] top-[60%]' : ''
+                    }`}
+                    alt=""
+                  />
+                )}
+
+                {user?.cover_image_url && (
+                  <img
+                    src={user.cover_image_url}
+                    className="h-[200px] w-full object-scale-down"
+                    alt=""
+                  />
+                )}
               </div>
               <div className="ml-2 pt-4">{user?.name}</div>
               <div className="ml-2">

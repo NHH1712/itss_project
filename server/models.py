@@ -38,10 +38,10 @@ class Posts(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    user = relationship('Users', back_populates='posts')
+    user = relationship('Users', back_populates='posts', cascade='all, delete')
     post_tag = relationship('PostTag', back_populates='post', cascade='all, delete')
-    post_vote = relationship('PostVote', back_populates='post')
-    comments = relationship('Comments', back_populates='post')
+    post_vote = relationship('PostVote', back_populates='post', cascade='all, delete')
+    comments = relationship('Comments', back_populates='post', cascade='all, delete')
 
 class Tags(Base):
     __tablename__ = 'tags'
