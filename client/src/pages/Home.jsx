@@ -233,14 +233,15 @@ const Home = () => {
 
   const sortedPosts = sortPosts(posts);
   const recentPosts = [...posts]
-  .filter(post => isLoggedIn ? post.user_id === user.id : true) // Filter posts for the logged-in user
+  .filter(post => isLoggedIn ? post.user_id === user.id && post.is_deleted === false : true) 
   .sort((a, b) => {
     const dateA = new Date(a.update_at || a.created_at);
     const dateB = new Date(b.update_at || b.created_at);
 
     return dateB - dateA;
   })
-  .slice(0, 3);
+  .slice(0, 3).reverse();
+  console.log(recentPosts)
   const customStyles = {
     mask: {
       opacity: '0.2',
@@ -251,7 +252,7 @@ const Home = () => {
       <Header onSearch={handleSearch}/>
       <div className="w-3/5 flex mt-4 mx-auto ">
         <div className="main-view-page w-2/3 mr-10">
-          <div className="sticky z-10 top-[72px]">
+          <div className="sticky top-[72px]">
             <div className="h-14 bg-white p-2 border border-gray-100 flex rounded">
               {isLoggedIn ? (
                 <img src={user?.avatar_url ? user.avatar_url : "/social-media.png"} alt="icon" className="mx-2" />
@@ -268,7 +269,7 @@ const Home = () => {
             </div>
           </div>
 
-          <div className="filter bg-white py-2 sticky top-[128px] z-10 border border-gray-100 flex rounded">
+          <div className="filter bg-white py-2 sticky top-[128px] border border-gray-100 flex rounded">
             <div className="flex ml-10">
               <div className="mr-2">
                 <button
@@ -316,7 +317,7 @@ const Home = () => {
             </div>
           </div>
           {sortedPosts.map((post) => (
-            <div key={post.id} className="post-view bg-white mt-4 z-0">
+            <div key={post.id} className="post-view bg-white mt-4">
               <div className="p-4 pb-4">
                 <div className="header-post flex items-center">
                   <div className="user-icon mr-2">
@@ -523,8 +524,8 @@ const Home = () => {
                       <div className="truncate">
                         {post.description}
                       </div>
-                      <div>
-                      {post.image_url && <img src={post.image_url} alt="image" className=""/>}
+                      <div className="flex items-center">
+                      {post.image_url && <img src={post.image_url} alt="image" className="h-[50px] w-[100px] object-scale-down "/>}
                       </div>
                       <div className="flex justify-end">
                         <div className="text-xs mr-1">

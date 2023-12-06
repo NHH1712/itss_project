@@ -469,10 +469,10 @@ const Profile = () => {
               </div>
               :
               <div>
-                {searchPosts.filter((post) => post.is_deleted == true && post.user_id === user?.id).length === 0 ? (
+                {searchPosts.filter((post) => post.is_deleted == false && post.user_id === user?.id).length === 0 ? (
                   <div className=""><Empty/></div>
                 ) : (
-                searchPosts.filter((post) => post.is_deleted == true && post.user_id === user?.id
+                searchPosts.filter((post) => post.is_deleted == false && post.user_id === user?.id
                     )
                   .map((post) => (
                     <div key={post.id} className="post-view bg-white z-0">

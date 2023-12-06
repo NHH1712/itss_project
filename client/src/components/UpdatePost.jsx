@@ -237,7 +237,7 @@ const UpdatePost = () => {
             {/* <div className="border border-[#DAE0E6] mt-10 mb-4 w-1/6 rounded-2xl">
             <button className="w-full"> + Image</button>
           </div> */}
-            <div className="mb-1 w-full flex mt-4">
+            <div className="mb-1 w-full flex mt-2">
               {!isEditImage ? (
                 <>
                   <img
