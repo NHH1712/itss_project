@@ -11,6 +11,7 @@ const UpdateProfile = () => {
   const {user, isLoggedIn, logout } = authInfo
     ? authInfo
     : { isLoggedIn: false, logout: () => {} };
+  console.log(user)
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: user.name,
@@ -91,8 +92,8 @@ const UpdateProfile = () => {
           },
           body: JSON.stringify({
             name: formData.name,
-            username: "",
-            password: "",
+            username: user.username,
+            password: user.password,
             classname: formData.classname,
             grade: formData.grade,
             avatar_url: formData.avatar_url,
@@ -103,11 +104,13 @@ const UpdateProfile = () => {
       if (response.ok) {
         const data = await response.json();
         console.log(data);
+        localStorage.setItem("current-user", JSON.stringify(data));
         if (data) {
           message.success("update success");
           setTimeout(() => {
-            navigateTo("/");
-          }, 5000);  
+            navigateTo("/profile");
+            window.location.reload(true)
+          }, 3000);  
         }
       } else {
         console.error("Update failed");
@@ -116,7 +119,6 @@ const UpdateProfile = () => {
       console.error("Error:", error);
     }
   };
-  console.log(formData)
   return (
     <form onSubmit={handleSubmit}>
       <div className="w-screen h-screen bg-[#e7e5e4]">

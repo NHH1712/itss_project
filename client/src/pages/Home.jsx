@@ -241,7 +241,6 @@ const Home = () => {
     return dateB - dateA;
   })
   .slice(0, 3).reverse();
-  console.log(recentPosts)
   const customStyles = {
     mask: {
       opacity: '0.2',
@@ -250,10 +249,10 @@ const Home = () => {
   return (
     <div className="h-screen w-screen bg-gray-100 overflow-y-auto ">
       <Header onSearch={handleSearch}/>
-      <div className="w-3/5 flex mt-4 mx-auto ">
+      <div className="w-3/5 flex mt-4 mx-auto">
         <div className="main-view-page w-2/3 mr-10">
-          <div className="sticky top-[72px]">
-            <div className="h-14 bg-white p-2 border border-gray-100 flex rounded">
+          <div className="sticky top-[72px] z-10">
+            <div className="h-14 bg-white p-2 border border-gray-100 flex rounded backdrop-blur-[4px]" style={{backgroundColor: 'rgba(255,255,255,0.8)'}}>
               {isLoggedIn ? (
                 <img src={user?.avatar_url ? user.avatar_url : "/social-media.png"} alt="icon" className="mx-2" />
               ) : (
@@ -268,56 +267,57 @@ const Home = () => {
               </button>
             </div>
           </div>
-
-          <div className="filter bg-white py-2 sticky top-[128px] border border-gray-100 flex rounded">
-            <div className="flex ml-10">
-              <div className="mr-2">
-                <button
-                  className={`flex items-center justify-center ${
-                    sortCriteria === "best" ? "bg-[#eeeeee]" : ""
-                  }`}
-                  onClick={() => handleSortClick("best")}
-                >
-                  <img src="/star.png" alt="Star" className="mr-2"></img>
-                  Best
-                </button>
-              </div>
-              <div className="mr-2">
-                <button
-                  className={`flex items-center justify-center ${
-                    sortCriteria === "hot" ? "bg-[#eeeeee]" : ""
-                  }`}
-                  onClick={() => handleSortClick("hot")}
-                >
-                  <img src="/fire.png" alt="Fire" className="mr-2"></img>
-                  Hot
-                </button>
-              </div>
-              <div className="mr-2">
-                <button
-                  className={`flex items-center justify-center ${
-                    sortCriteria === "new" ? "bg-[#eeeeee]" : ""
-                  }`}
-                  onClick={() => handleSortClick("new")}
-                >
-                  <img src="/thunder.png" alt="Thunder" className="mr-2"></img>
-                  New
-                </button>
-              </div>
-              <div>
-                <button
-                  className={`flex items-center justify-center ${
-                    sortCriteria === "top" ? "bg-[#eeeeee]" : ""
-                  }`}
-                  onClick={() => handleSortClick("top")}
-                >
-                  <img src="/up.png" alt="Up" className="mr-2"></img>Top
-                </button>
+          <div className="filter sticky top-[128px] z-10">
+            <div className=" bg-white py-2 border border-gray-100 flex rounded backdrop-blur-[4px]" style={{backgroundColor: 'rgba(255,255,255,0.8)'}}>
+              <div className="flex ml-10">
+                <div className="mr-2">
+                  <button
+                    className={`flex items-center justify-center ${
+                      sortCriteria === "best" ? "bg-[#eeeeee]" : ""
+                    }`}
+                    onClick={() => handleSortClick("best")}
+                  >
+                    <img src="/star.png" alt="Star" className="mr-2"></img>
+                    Best
+                  </button>
+                </div>
+                <div className="mr-2">
+                  <button
+                    className={`flex items-center justify-center ${
+                      sortCriteria === "hot" ? "bg-[#eeeeee]" : ""
+                    }`}
+                    onClick={() => handleSortClick("hot")}
+                  >
+                    <img src="/fire.png" alt="Fire" className="mr-2"></img>
+                    Hot
+                  </button>
+                </div>
+                <div className="mr-2">
+                  <button
+                    className={`flex items-center justify-center ${
+                      sortCriteria === "new" ? "bg-[#eeeeee]" : ""
+                    }`}
+                    onClick={() => handleSortClick("new")}
+                  >
+                    <img src="/thunder.png" alt="Thunder" className="mr-2"></img>
+                    New
+                  </button>
+                </div>
+                <div>
+                  <button
+                    className={`flex items-center justify-center ${
+                      sortCriteria === "top" ? "bg-[#eeeeee]" : ""
+                    }`}
+                    onClick={() => handleSortClick("top")}
+                  >
+                    <img src="/up.png" alt="Up" className="mr-2"></img>Top
+                  </button>
+                </div>
               </div>
             </div>
           </div>
           {sortedPosts.map((post) => (
-            <div key={post.id} className="post-view bg-white mt-4">
+            <div key={post.id} className="post-view bg-white mt-4 sticky top-[72px] z-1">
               <div className="p-4 pb-4">
                 <div className="header-post flex items-center">
                   <div className="user-icon mr-2">

@@ -232,7 +232,6 @@ const Profile = () => {
       opacity: '0.2',
     },
   };
-  console.log(searchPosts)
   return (
     <div className="w-screen h-screen bg-[#e7e5e4] overflow-y-auto">
       <Header onSearch={handleSearch}/>

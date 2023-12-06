@@ -55,7 +55,10 @@ const Signup = () => {
       if (response.ok) {
         const data = await response.json();
         console.log(data);
-        navigate('/login');
+        message.success("Signup success");
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
       } else {
         message.error('Signup failed');
       }
