@@ -251,7 +251,7 @@ const Home = () => {
       <Header onSearch={handleSearch}/>
       <div className="w-3/5 flex mt-4 mx-auto">
         <div className="main-view-page w-2/3 mr-10">
-          <div className="sticky top-[72px] z-10">
+          <div className="sticky top-[56px] z-10">
             <div className="h-14 bg-white p-2 border border-gray-100 flex rounded backdrop-blur-[4px]" style={{backgroundColor: 'rgba(255,255,255,0.8)'}}>
               {isLoggedIn ? (
                 <img src={user?.avatar_url ? user.avatar_url : "/social-media.png"} alt="icon" className="mx-2" />
@@ -267,7 +267,7 @@ const Home = () => {
               </button>
             </div>
           </div>
-          <div className="filter sticky top-[128px] z-10">
+          <div className="filter sticky top-[112px] z-10">
             <div className=" bg-white py-2 border border-gray-100 flex rounded backdrop-blur-[4px]" style={{backgroundColor: 'rgba(255,255,255,0.8)'}}>
               <div className="flex ml-10">
                 <div className="mr-2">
@@ -317,7 +317,7 @@ const Home = () => {
             </div>
           </div>
           {sortedPosts.map((post) => (
-            <div key={post.id} className="post-view bg-white mt-4 sticky top-[72px] z-1">
+            <div key={post.id} className="post-view bg-white mt-4">
               <div className="p-4 pb-4">
                 <div className="header-post flex items-center">
                   <div className="user-icon mr-2">
