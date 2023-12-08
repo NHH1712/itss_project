@@ -10,7 +10,10 @@ import {
   DownCircleOutlined,
 } from "@ant-design/icons";
 import { Modal, message, Empty } from "antd";
+import { usePosts } from "../contexts/PostContext";
 const Home = () => {
+  const postInfo = usePosts();
+  const { postsTest } = postInfo;
   const navigate = useNavigate();
   const authInfo = useAuth();
   const { user, isLoggedIn } = authInfo;
@@ -51,6 +54,7 @@ const Home = () => {
     };
     fetchTags();
   }, []);
+
   const predefinedColors = [
     '#FF5733', '#33FF57', '#5733FF', '#FF3364', '#33A0FF',
     '#FFD133', '#FF33A5', '#33FFB2', '#8E33FF', '#FF8C33'
@@ -140,10 +144,6 @@ const Home = () => {
       console.error("Error:", error);
     }
   };
-  const [sortCriteria, setSortCriteria] = useState("new");
-  const handleSortClick = (criteria) => {
-    setSortCriteria(criteria);
-  };
   const handleVotePost = async (postId, type_vote) => {
     try {
       const response = await fetch(`http://127.0.0.1:8000/post_vote/vote/?type_vote=${type_vote}`, {
@@ -197,13 +197,22 @@ const Home = () => {
       console.error("Error:", error);
     }
   };
+  const customStyles = {
+    mask: {
+      opacity: '0.2',
+    },
+  };
   const [searchValue, setSearchValue] = useState("");
   const handleSearch = (searchValue) => {
     setSearchValue(searchValue);
     console.log(searchValue);
   };
+  const [sortCriteria, setSortCriteria] = useState("new");
+  const handleSortClick = (criteria) => {
+    setSortCriteria(criteria);
+  };
   const sortPosts = (posts) => {
-    const filteredPosts = posts.filter(post => post.is_deleted != true);
+    // const filteredPosts = posts?.filter(post => post.is_deleted != true);
     const searchFilter = (post) => {
       const searchTerm = searchValue.toLowerCase();
       return (
@@ -212,7 +221,8 @@ const Home = () => {
         post.title.toLowerCase().includes(searchTerm)
       );
     };
-    const searchFilteredPosts = filteredPosts.filter(searchFilter);
+    // const searchFilteredPosts = filteredPosts.filter(searchFilter);
+    const searchFilteredPosts = posts.filter(searchFilter);
     switch (sortCriteria) {
       case "best":
         return searchFilteredPosts.sort((a, b) => b.id - a.id);
@@ -230,10 +240,9 @@ const Home = () => {
         return searchFilteredPosts;
     }
   };
-
   const sortedPosts = sortPosts(posts);
   const recentPosts = [...posts]
-  .filter(post => isLoggedIn ? post.user_id === user.id && post.is_deleted === false : true) 
+  .filter(post => isLoggedIn ? post.user_id === user.id : true) 
   .sort((a, b) => {
     const dateA = new Date(a.update_at || a.created_at);
     const dateB = new Date(b.update_at || b.created_at);
@@ -241,17 +250,12 @@ const Home = () => {
     return dateB - dateA;
   })
   .slice(0, 3).reverse();
-  const customStyles = {
-    mask: {
-      opacity: '0.2',
-    },
-  };
   return (
     <div className="h-screen w-screen bg-gray-100 overflow-y-auto ">
       <Header onSearch={handleSearch}/>
       <div className="w-3/5 flex mt-4 mx-auto">
         <div className="main-view-page w-2/3 mr-10">
-          <div className="sticky top-[72px] z-10">
+          <div className="sticky top-[56px] z-10">
             <div className="h-14 bg-white p-2 border border-gray-100 flex rounded backdrop-blur-[4px]" style={{backgroundColor: 'rgba(255,255,255,0.8)'}}>
               {isLoggedIn ? (
                 <img src={user?.avatar_url ? user.avatar_url : "/social-media.png"} alt="icon" className="mx-2" />
@@ -267,7 +271,7 @@ const Home = () => {
               </button>
             </div>
           </div>
-          <div className="filter sticky top-[128px] z-10">
+          <div className="filter sticky top-[112px] z-10">
             <div className=" bg-white py-2 border border-gray-100 flex rounded backdrop-blur-[4px]" style={{backgroundColor: 'rgba(255,255,255,0.8)'}}>
               <div className="flex ml-10">
                 <div className="mr-2">
@@ -317,7 +321,7 @@ const Home = () => {
             </div>
           </div>
           {sortedPosts.map((post) => (
-            <div key={post.id} className="post-view bg-white mt-4 sticky top-[72px] z-1">
+            <div key={post.id} className="post-view bg-white mt-4">
               <div className="p-4 pb-4">
                 <div className="header-post flex items-center">
                   <div className="user-icon mr-2">
