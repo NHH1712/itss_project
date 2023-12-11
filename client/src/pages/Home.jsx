@@ -212,7 +212,7 @@ const Home = () => {
     setSortCriteria(criteria);
   };
   const sortPosts = (posts) => {
-    // const filteredPosts = posts?.filter(post => post.is_deleted != true);
+    const filteredPosts = posts?.filter(post => post.is_deleted != true);
     const searchFilter = (post) => {
       const searchTerm = searchValue.toLowerCase();
       return (
@@ -221,8 +221,8 @@ const Home = () => {
         post.title.toLowerCase().includes(searchTerm)
       );
     };
-    // const searchFilteredPosts = filteredPosts.filter(searchFilter);
-    const searchFilteredPosts = posts.filter(searchFilter);
+    const searchFilteredPosts = filteredPosts.filter(searchFilter);
+    // const searchFilteredPosts = posts.filter(searchFilter);
     switch (sortCriteria) {
       case "best":
         return searchFilteredPosts.sort((a, b) => b.id - a.id);
@@ -242,7 +242,7 @@ const Home = () => {
   };
   const sortedPosts = sortPosts(posts);
   const recentPosts = [...posts]
-  .filter(post => isLoggedIn ? post.user_id === user.id : true) 
+  .filter(post => isLoggedIn ? post.user_id === user.id && post.is_deleted === false : true) 
   .sort((a, b) => {
     const dateA = new Date(a.update_at || a.created_at);
     const dateB = new Date(b.update_at || b.created_at);

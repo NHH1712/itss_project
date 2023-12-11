@@ -1,6 +1,6 @@
 # Ignored files
-/server/.env
-/server/alembic.ini
-/server/alembic/env.py
-/server/alembic/script.py.mako
-/server/alembic/versions/
+/server/home/.env
+/server/home/alembic.ini
+/server/home/alembic/env.py
+/server/home/alembic/script.py.mako
+/server/home/alembic/versions/
