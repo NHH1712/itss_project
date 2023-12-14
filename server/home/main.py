@@ -34,7 +34,9 @@ app = FastAPI()
 app.add_middleware(DBSessionMiddleware, db_url=os.environ['DATABASE_URL'])
 origins = [
     "http://localhost:5173",
-    "localhost:5173"
+    "localhost:5173",
+    "http://localhost:5174",
+    "localhost:5174"
 ]
 s3 = boto3.client("s3", aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'], aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'], region_name=os.environ['AWS_REGION'])
 
@@ -67,7 +69,6 @@ async def upload_files(files: List[UploadFile]):
         return {"message": "Upload successful", "urls": uploaded_urls}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @app.post('/login')
 async def login(username: str, password: str):
@@ -138,7 +139,6 @@ async def delete_tag(tag_id: int):
     db.session.delete(db_tag)
     db.session.commit()
     return {'message': 'Tag has been deleted successfully'}
-
 # Posts crud
 @app.get('/posts/')
 async def get_posts():
@@ -206,7 +206,6 @@ async def post_by_user_id(user_id: int, post: SchemaPosts, post_tags: List[Schem
         return new_post
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 @app.put('/posts/{post_id}', response_model=SchemaPosts)
 async def update_post(post_id: int, post: SchemaPosts, post_tags: List[SchemaPostTag]):
     db_post = db.session.query(ModelPosts).filter(ModelPosts.id == post_id).first()
@@ -216,7 +215,6 @@ async def update_post(post_id: int, post: SchemaPosts, post_tags: List[SchemaPos
     db_post.image_url = post.image_url
     db.session.commit()
     return db_post
-
 @app.put('/posts/change/{post_id}', response_model=SchemaPosts)
 async def update_post_change(post_id: int, post: SchemaPosts, post_tags: List[SchemaPostTag]):
     db_post = db.session.query(ModelPosts).filter(ModelPosts.id == post_id).first()
@@ -234,14 +232,12 @@ async def update_post_change(post_id: int, post: SchemaPosts, post_tags: List[Sc
 
     db.session.commit()
     return db_post
-
 @app.put('/restore/posts/{post_id}', response_model=SchemaPosts)
 async def restore_post(post_id: int):
     db_post = db.session.query(ModelPosts).filter(ModelPosts.id == post_id).first()
     db_post.is_deleted = False
     db.session.commit()
     return db_post
-
 @app.delete('/delete/posts/{post_id}')
 async def delete_post(post_id: int):
     db_post = db.session.query(ModelPosts).filter(ModelPosts.id == post_id).first()
@@ -254,7 +250,6 @@ async def delete_post(post_id: int):
         return {'message': 'Post has been soft-deleted successfully'}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
-
 # Post tag crud
 @app.get('/post_tag/')
 async def get_all_post_tag():
