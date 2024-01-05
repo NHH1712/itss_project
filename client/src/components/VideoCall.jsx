@@ -4,7 +4,31 @@ import { useEffect, useRef, useState } from 'react';
 import Peer from 'simple-peer';
 const VideoCall = () => {
   const { user } = useAuth();
-  // console.log(user)
+  const [peer, setPeer] = useState(null);
+  const handleStartCall = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      const newPeer = new Peer({ initiator: true, trickle: false, stream });
+      newPeer.on('signal', (data) => {
+        sendSignalToPeer2(data);
+      });
+      newPeer.on('data', (data) => {
+        console.log('Received data:', data);
+      });
+
+      newPeer.on('error', (err) => {
+        console.error('Peer connection error:', err);
+      });
+      setPeer(newPeer);
+    } catch (error) {
+      console.error('Error accessing media devices:', error);
+    }
+  };
+
+  const sendSignalToPeer2 = (signalData) => {
+    const socket = new WebSocket('ws://localhost:5174');
+    socket.send(JSON.stringify(signalData));
+  };
   return (
     <div className="h-screen w-screen bg-gray-100">
       <Header/>
@@ -23,8 +47,9 @@ const VideoCall = () => {
             </div> 
           </div>
           <div className="next btn flex items-center justify-center">
-            <button className="text-3xl text-white" 
-              style={{backgroundColor: "#50B58D", width: "100px", height: "100px", display: "flex", justifyContent: "center", alignItems: "center"}}>
+            <button className="text-3xl text-red-500" 
+              style={{backgroundColor: "#50B58D", width: "100px", height: "100px", display: "flex", justifyContent: "center", alignItems: "center"}}
+              onClick={handleStartCall}>
               <span>Start</span>
             </button>
           </div>
@@ -43,7 +68,7 @@ const VideoCall = () => {
             </div> 
           </div>
           <div className="stop btn flex items-center justify-center">
-            <button className="text-3xl text-white" 
+            <button className="text-3xl text-red-500" 
               style={{backgroundColor: "#D57658", width: "100px", height: "100px", display: "flex", justifyContent: "center", alignItems: "center"}}>
               <span>Stop</span>
             </button>
@@ -83,4 +108,3 @@ const WebRTCComponent = () => {
     </div>
   );
 };
-
