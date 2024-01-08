@@ -9,22 +9,25 @@ import Profile from "./components/Profile";
 import UpdateProfile from "./components/UpdateProfile";
 import VideoCall from "./components/VideoCall";
 import Upload from "./components/Upload";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<Login />} exact />
-          <Route path="/signup" element={<Signup />} exact />
-          <Route path="/" element={<Home />} exact />
-          <Route path="/create-post" element={<CreatePost />} exact />
-          <Route path="/update-post/:postId" element={<UpdatePost />} exact />
-          <Route path="/profile" element={<Profile />} exact />
-          <Route path="/update-profile/:profileId" element={<UpdateProfile/>} />
-          <Route path="/video-call" element={<VideoCall/>} />
-          <Route path="/upload" element={<Upload/>} />
-        </Routes>
-      </AuthProvider>
+      <GoogleOAuthProvider clientId="899389467449-gvllkhrlj5dcabc6trpnkdlbm40cdu0m.apps.googleusercontent.com">
+        <AuthProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} exact />
+            <Route path="/signup" element={<Signup />} exact />
+            <Route path="/" element={<Home />} exact />
+            <Route path="/create-post" element={<CreatePost />} exact />
+            <Route path="/update-post/:postId" element={<UpdatePost />} exact />
+            <Route path="/profile" element={<Profile />} exact />
+            <Route path="/update-profile/:profileId" element={<UpdateProfile/>} />
+            <Route path="/video-call" element={<VideoCall/>} />
+            <Route path="/upload" element={<Upload/>} />
+          </Routes>
+        </AuthProvider>
+      </GoogleOAuthProvider>
     </BrowserRouter>
   );
 }
