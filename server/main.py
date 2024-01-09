@@ -56,11 +56,9 @@ async def upload_files(files: List[UploadFile]):
         uploaded_urls = []
 
         for file in files:
-            # Upload ảnh lên AWS S3
             s3.upload_fileobj(file.file, os.environ['AWS_BUCKET_NAME'], file.filename,  ExtraArgs={
                     'ContentType': file.content_type,
                 })
-            # Lưu URL của ảnh vào danh sách uploaded_urls
             uploaded_url = f"https://{os.environ['AWS_BUCKET_NAME']}.s3.{os.environ['AWS_REGION']}.amazonaws.com/{file.filename}"
             uploaded_urls.append(uploaded_url)
 
@@ -84,7 +82,7 @@ async def get_user(user_id: int):
     return user
 @app.post('/users/', response_model=SchemaUsers)
 async def user(user: SchemaUsers):
-    db_user = ModelUsers(name=user.name, username=user.username, password=user.password, avatar_url=user.avatar_url, cover_image_url=user.cover_image_url)
+    db_user = ModelUsers(name=user.name, username=user.username, password=user.password, avatar_url=user.avatar_url, cover_image_url=user.cover_image_url, google_id=user.google_id)
     db.session.add(db_user)
     db.session.commit()
     return db_user
