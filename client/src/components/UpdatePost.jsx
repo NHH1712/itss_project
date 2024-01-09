@@ -155,7 +155,7 @@ const UpdatePost = () => {
     <form onSubmit={handleSubmit}>
       <div className="h-screen w-screen bg-[#e7e5e4]">
         <div className="bg-white h-14 flex items-center justify-between">
-          <div className="font-bold text-[20px] leading-5 pl-6">HEDSOCIAL</div>
+          <div className="font-bold text-[20px] leading-5 pl-6">HUSTBLOG</div>
           <div className="flex mr-10">
             <img
               src={user?.avatar_url ? user.avatar_url : "/social-media.png"}

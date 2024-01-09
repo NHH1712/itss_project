@@ -1,5 +1,5 @@
 # itss_project
-HedSocial by React
+HUSTBLOG by React
 Project use React + MySQL(PostgreSQL)
 
 Quy tắc Code:

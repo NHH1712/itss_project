@@ -123,7 +123,7 @@ const UpdateProfile = () => {
     <form onSubmit={handleSubmit}>
       <div className="w-screen h-screen bg-[#e7e5e4]">
         <div className="bg-white h-14 flex items-center justify-between">
-          <div className="font-bold text-[20px] leading-5 pl-6">HEDSOCIAL</div>
+          <div className="font-bold text-[20px] leading-5 pl-6">HUSTBLOG</div>
           <div className="flex items-center text-center w-1/6">
             {isLoggedIn ? (
               <div className="flex items-center justify-center">

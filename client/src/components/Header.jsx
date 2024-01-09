@@ -44,7 +44,7 @@ const Header = ({ onSearch }) => {
   return (
     <>
       <div className="bg-white h-14 flex items-center sticky top-0">
-        <div className="font-bold text-[20px] leading-5 pl-6">HEDSOCIAL</div>
+        <div className="font-bold text-[20px] leading-5 pl-6">HUSTBLOG</div>
         <div className="w-1/5 px-1 py-1.5 mx-10 flex items-center text-center">
           <Link
             to="/"
