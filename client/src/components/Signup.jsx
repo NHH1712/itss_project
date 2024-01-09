@@ -26,8 +26,6 @@ const Signup = () => {
     name: '',
     username: '',
     password: '',
-    classname: 'Việt Nhật 01',
-    grade: 'K65',
     avatar_url: '',
     cover_image_url: '',
   });
@@ -85,7 +83,7 @@ const Signup = () => {
             </div>
           </div>
           
-          <div className="w-4/5 mx-auto">
+          {/* <div className="w-4/5 mx-auto">
             <div>Grade <span className="text-red-600">*</span></div>
             <Select
               style={{ width: '100%', height: '100%', paddingTop: '0.5rem', paddingBottom: '0.5rem', display: 'flex', alignItems: 'center' }}
@@ -100,9 +98,9 @@ const Signup = () => {
                 { value: 'K68', label: 'K68'},
               ]}
             />
-          </div>
+          </div> */}
           
-          <div className="w-4/5 mx-auto">
+          {/* <div className="w-4/5 mx-auto">
             <div>Class <span className="text-red-600">*</span></div>
             <Select
               style={{ width: '100%', height: '100%', paddingTop: '0.5rem', paddingBottom: '0.5rem', display: 'flex', alignItems: 'center' }}
@@ -116,7 +114,7 @@ const Signup = () => {
                 { value: 'Việt Nhật 05', label: 'Việt Nhật 05'},
               ]}
             />
-          </div>
+          </div> */}
 
           <div className="w-4/5 mx-auto mb-2">
             <div>Username <span className="text-red-600">*</span></div>

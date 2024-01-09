@@ -55,8 +55,8 @@ class Users(BaseModel):
     name:str
     username:str
     password:str
-    classname:str
-    grade:str
+    # classname:str
+    # grade:str
     avatar_url:str
     cover_image_url:str
 

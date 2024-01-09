@@ -84,7 +84,7 @@ async def get_user(user_id: int):
     return user
 @app.post('/users/', response_model=SchemaUsers)
 async def user(user: SchemaUsers):
-    db_user = ModelUsers(name=user.name, username=user.username, password=user.password, classname=user.classname, grade=user.grade, avatar_url=user.avatar_url, cover_image_url=user.cover_image_url)
+    db_user = ModelUsers(name=user.name, username=user.username, password=user.password, avatar_url=user.avatar_url, cover_image_url=user.cover_image_url)
     db.session.add(db_user)
     db.session.commit()
     return db_user
@@ -94,8 +94,6 @@ async def update_user(user_id: int, user: SchemaUsers):
     db_user.name = user.name
     db_user.username = user.username
     db_user.password = user.password
-    db_user.classname = user.classname
-    db_user.grade = user.grade
     db_user.avatar_url = user.avatar_url
     db_user.cover_image_url = user.cover_image_url
     db.session.commit()

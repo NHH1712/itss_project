@@ -46,17 +46,13 @@ const Login = () => {
         }
       })
         .then((res) => {
+          
           console.log(res.data)
           login(res.data)
         })
         .catch((err) => console.log(err));
     }
-  },
-    [user]
-  );
-  const logoutGoogle = () => {
-    googleLogout();
-  };
+  },[user]);
   return (
     <form onSubmit={handleSubmit}>
       <div className="h-screen w-screen bg-[#e7e5e4] flex justify-center items-center">
