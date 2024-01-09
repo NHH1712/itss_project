@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { useState, useEffect } from 'react';
 import { useAuth } from "../contexts/AuthContext";
 import { message } from 'antd';
-import { googleLogout, useGoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -37,8 +37,51 @@ const Login = () => {
     onSuccess: (codeResponse) => setUser(codeResponse),
     onError: (error) => console.log('Login Failed:', error)
   });
+  const [dataUsers, setDataUsers] = useState([]);
   useEffect(() => {
-    if (user) {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch(`http://localhost:8000/users/`)
+        if (response.ok) {
+          const data = await response.json();
+          setDataUsers(data);
+        } else {
+          console.error("Failed to fetch user");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+    fetchUser();
+  },[]);
+  const usernameUsers = dataUsers.map((user) => user.username);
+  const signupWithGoogle = async (data) => {
+    try {
+      const response = await fetch('http://localhost:8000/users/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: data.name,
+          username: data.email,
+          password: data.email,
+          avatar_url: data.picture,
+          cover_image_url: data.picture,
+          google_id: data.google_id,
+        })
+      });
+      if (response.ok) {
+        console.log(data);
+      } else {
+        message.error("Signup failed");
+      }
+    } catch (error) {
+      message.error("Error:", error);
+    }
+  }
+  useEffect(() => {
+    if (user && user.access_token) {
       axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
         headers: {
           Authorization: `Bearer ${user.access_token}`,
@@ -46,9 +89,20 @@ const Login = () => {
         }
       })
         .then((res) => {
-          
-          console.log(res.data)
-          login(res.data)
+          const userInfo = {
+            name: res.data.name,
+            email: res.data.email,
+            picture: res.data.picture,
+            google_id: res.data.id,
+          };
+          if(usernameUsers.includes(res.data.email)){
+            login(userInfo)
+            return;
+          }
+          signupWithGoogle(userInfo)
+          setTimeout(() => {
+            login(userInfo)
+          }, 2000)
         })
         .catch((err) => console.log(err));
     }

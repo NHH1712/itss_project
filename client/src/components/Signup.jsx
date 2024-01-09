@@ -21,13 +21,14 @@ const Signup = () => {
     fetchUser();
   },[]);
   const usernameUsers = dataUsers.map((user) => user.username);
-  console.log(usernameUsers)
+  // console.log(usernameUsers)
   const [formData, setFormData] = useState({
     name: '',
     username: '',
     password: '',
     avatar_url: '',
     cover_image_url: '',
+    google_id: '',
   });
   
   const [confirmPass, setConFirmPass] = useState("");

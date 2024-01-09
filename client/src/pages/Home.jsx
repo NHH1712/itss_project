@@ -115,12 +115,12 @@ const Home = () => {
   };
   const handleCancel = () => {
     confirmDeleteRef.current = false;
-    setIsModalOpen(false);  
+    setIsModalOpen(false);
   };
   const handleDelete = async (postId) => {
     showModal();
     console.log(confirmDeleteRef.current)
-    if(!confirmDeleteRef.current) return;
+    if (!confirmDeleteRef.current) return;
     try {
       const response = await fetch(`http://127.0.0.1:8000/delete/posts/${postId}`, {
         method: "DELETE",
@@ -154,7 +154,7 @@ const Home = () => {
         body: JSON.stringify({
           user_id: user.id,
           post_id: postId,
-          upvote : 0,
+          upvote: 0,
           downvote: 0
         }),
       });
@@ -171,7 +171,7 @@ const Home = () => {
     }
   }
   const handleCommentVote = async (commentId, type_vote) => {
-    if(!isLoggedIn) {
+    if (!isLoggedIn) {
       alert("Cannot vote comment. User is not logged in.");
       return;
     }
@@ -233,14 +233,14 @@ const Home = () => {
 
   const sortedPosts = sortPosts(posts);
   const recentPosts = [...posts]
-  .filter(post => isLoggedIn ? post.user_id === user.id && post.is_deleted === false : true) 
-  .sort((a, b) => {
-    const dateA = new Date(a.update_at || a.created_at);
-    const dateB = new Date(b.update_at || b.created_at);
+    .filter(post => isLoggedIn ? post.user_id === user.id && post.is_deleted === false : true)
+    .sort((a, b) => {
+      const dateA = new Date(a.update_at || a.created_at);
+      const dateB = new Date(b.update_at || b.created_at);
 
-    return dateB - dateA;
-  })
-  .slice(0, 3).reverse();
+      return dateB - dateA;
+    })
+    .slice(0, 3).reverse();
   const customStyles = {
     mask: {
       opacity: '0.2',
@@ -248,11 +248,11 @@ const Home = () => {
   };
   return (
     <div className="h-screen w-screen bg-gray-100 overflow-y-auto ">
-      <Header onSearch={handleSearch}/>
+      <Header onSearch={handleSearch} />
       <div className="w-3/5 flex mt-4 mx-auto">
         <div className="main-view-page w-2/3 mr-10">
-          <div className="sticky top-[72px] z-10">
-            <div className="h-14 bg-white p-2 border border-gray-100 flex rounded backdrop-blur-[4px]" style={{backgroundColor: 'rgba(255,255,255,0.8)'}}>
+          <div className="sticky top-[56px] z-10">
+            <div className="h-14 bg-white p-2 border border-gray-100 flex rounded backdrop-blur-[4px]" style={{ backgroundColor: 'rgba(255,255,255,0.8)' }}>
               {isLoggedIn ? (
                 <img src={user?.avatar_url ? user.avatar_url : "/social-media.png"} alt="icon" className="mx-2" />
               ) : (
@@ -267,14 +267,13 @@ const Home = () => {
               </button>
             </div>
           </div>
-          <div className="filter sticky top-[128px] z-10">
-            <div className=" bg-white py-2 border border-gray-100 flex rounded backdrop-blur-[4px]" style={{backgroundColor: 'rgba(255,255,255,0.8)'}}>
+          <div className="filter sticky top-[112px] z-10">
+            <div className=" bg-white py-2 border border-gray-100 flex rounded backdrop-blur-[4px]" style={{ backgroundColor: 'rgba(255,255,255,0.8)' }}>
               <div className="flex ml-10">
                 <div className="mr-2">
                   <button
-                    className={`flex items-center justify-center ${
-                      sortCriteria === "best" ? "bg-[#eeeeee]" : ""
-                    }`}
+                    className={`flex items-center justify-center ${sortCriteria === "best" ? "bg-[#eeeeee]" : ""
+                      }`}
                     onClick={() => handleSortClick("best")}
                   >
                     <img src="/star.png" alt="Star" className="mr-2"></img>
@@ -283,9 +282,8 @@ const Home = () => {
                 </div>
                 <div className="mr-2">
                   <button
-                    className={`flex items-center justify-center ${
-                      sortCriteria === "hot" ? "bg-[#eeeeee]" : ""
-                    }`}
+                    className={`flex items-center justify-center ${sortCriteria === "hot" ? "bg-[#eeeeee]" : ""
+                      }`}
                     onClick={() => handleSortClick("hot")}
                   >
                     <img src="/fire.png" alt="Fire" className="mr-2"></img>
@@ -294,9 +292,8 @@ const Home = () => {
                 </div>
                 <div className="mr-2">
                   <button
-                    className={`flex items-center justify-center ${
-                      sortCriteria === "new" ? "bg-[#eeeeee]" : ""
-                    }`}
+                    className={`flex items-center justify-center ${sortCriteria === "new" ? "bg-[#eeeeee]" : ""
+                      }`}
                     onClick={() => handleSortClick("new")}
                   >
                     <img src="/thunder.png" alt="Thunder" className="mr-2"></img>
@@ -305,9 +302,8 @@ const Home = () => {
                 </div>
                 <div>
                   <button
-                    className={`flex items-center justify-center ${
-                      sortCriteria === "top" ? "bg-[#eeeeee]" : ""
-                    }`}
+                    className={`flex items-center justify-center ${sortCriteria === "top" ? "bg-[#eeeeee]" : ""
+                      }`}
                     onClick={() => handleSortClick("top")}
                   >
                     <img src="/up.png" alt="Up" className="mr-2"></img>Top
@@ -317,38 +313,40 @@ const Home = () => {
             </div>
           </div>
           {sortedPosts.map((post) => (
-            <div key={post.id} className="post-view bg-white mt-4 sticky top-[72px] z-1">
+            <div key={post.id} className="post-view bg-white mt-4">
               <div className="p-4 pb-4">
-                <div className="header-post flex items-center">
-                  <div className="user-icon mr-2">
-                    <img
-                      // src="/social-media.png"
-                      src={post.user?.avatar_url ? post.user.avatar_url : "/social-media.png"}
-                      alt="icon"
-                      width={20}
-                      height={20}
-                    ></img>
-                  </div>
-                  <div className="user-name font-medium text-base mr-2">
-                    <div>{post.user.name}</div>
-                  </div>
-                  <div className="time-post font-light text-xs mr-2">
-                    {/* <div>Posted at {post.created_at}</div> */}
-                    <div>
-                      Posted at {formatDistanceToNow(new Date(post.created_at))}{" "}
-                      ago
+                <div className="header-post flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="user-icon mr-2">
+                      <img
+                        // src="/social-media.png"
+                        src={post.user?.avatar_url ? post.user.avatar_url : "/social-media.png"}
+                        alt=""
+                        width={40}
+                        height={40}
+                      ></img>
                     </div>
-                  </div>
-                  <div className="post-tag flex mr-2">
-                    {post.post_tag?.map((tag) => (
-                      <div
-                        key={tag.id}
-                        className="tag text-xs mr-1 border border-gray-200 p-1 rounded-lg bg-neutral-700 text-white font-bold"
-                        style={{ backgroundColor: tagColors[tag.tag.id] }}
-                      >
-                        {tag.tag.name}
+                    <div className="user-name font-medium text-lg mr-2">
+                      <div>{post.user.name}</div>
+                    </div>
+                    <div className="time-post font-light text-xs mr-2">
+                      {/* <div>Posted at {post.created_at}</div> */}
+                      <div>
+                        Posted at {formatDistanceToNow(new Date(post.created_at))}{" "}
+                        ago
                       </div>
-                    ))}
+                    </div>
+                    <div className="post-tag flex mr-2">
+                      {post.post_tag?.map((tag) => (
+                        <div
+                          key={tag.id}
+                          className="tag text-xs mr-1 border border-gray-200 p-1 rounded-lg bg-neutral-700 text-white font-bold"
+                          style={{ backgroundColor: tagColors[tag.tag.id] }}
+                        >
+                          {tag.tag.name}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                   <div className="flex">
                     {isLoggedIn && post.user_id === user?.id && (
@@ -384,7 +382,7 @@ const Home = () => {
                           <div className="bg-gray-500 border mt-1 mb-4"></div>
                           <div className="flex items-center justify-center text-center">
                             <div className="flex flex-col items-center">
-                              <img src="/warning.png" alt="Warning"></img>
+                              <img src="/warning.png" alt=""></img>
                               <span className="font-bold mt-2">
                                 Do you really want to delete this post? <br />
                                 This process cannot be redone
@@ -410,16 +408,23 @@ const Home = () => {
                       <DownCircleOutlined />
                     </button>
                   </div>
-                  <div className="w-[85%]">
-                    <div className="post-title font-bold mb-1">
+                  <div className="w-[90%]">
+                    <div className="post-title font-bold text-4xl mb-1 break-words">
                       {post.title}
                     </div>
-                    <div className="description mb-1">{post.description}</div>
-                    <div className="image mb-1 w-full">
-                      {post.image_url && <img src={post.image_url} alt="image" className="h-[200px] w-[300px] object-scale-down"/>}
+                    <div className="description mb-1 max-w-full">{post.description}</div>
+                    <div className="image mb-1 w-4/5">
+                      {post.image_url && <img src={post.image_url} alt="" className="w-full" />}
+                    </div>
+                    <div>
+                      {post.sound_url && (
+                        <audio controls>
+                          <source src={post.sound_url} type="audio/mpeg" />
+                        </audio>
+                      )}
                     </div>
                     <div className="comment flex">
-                      <img src="/cmt.png"></img>
+                      <img src="/cmt.png" alt=""></img>
                       <span className="ml-2">
                         {post.comments?.length ?? 0} Comments
                       </span>
@@ -427,58 +432,58 @@ const Home = () => {
                   </div>
                 </div>
                 <div className="comment-post flex mt-2">
-                  <div className="border-l-2 border-gray-400">
+                  <div className="border-l-2 border-gray-400 w-full">
                     {post.comments?.length > 0 && (
-                    <div className="h-20 overflow-y-auto">
-                      {post.comments?.map((comment) => (
-                        <div key={comment.id} className="comment-item ml-4">
-                          <div className="comment header flex">
-                            <div className="mr-2">
-                              <img
-                                // src="/social-media.png"
-                                src={comment.user?.avatar_url ? comment.user.avatar_url : "/social-media.png"}
-                                alt="cmt icon"
-                                width={32}
-                                height={32}
-                              ></img>
+                      <div className="h-20 overflow-y-auto">
+                        {post.comments?.map((comment) => (
+                          <div key={comment.id} className="comment-item ml-4">
+                            <div className="comment header flex">
+                              <div className="mr-2">
+                                <img
+                                  // src="/social-media.png"
+                                  src={comment.user?.avatar_url ? comment.user.avatar_url : "/social-media.png"}
+                                  alt=""
+                                  width={32}
+                                  height={32}
+                                ></img>
+                              </div>
+                              <div className="flex items-center justify-center font-bold">
+                                {comment.user.name}
+                              </div>
+                              <div className="mr-2 ml-2 font-light text-xs flex items-center justify-center">
+                                {formatDistanceToNow(
+                                  new Date(comment.created_at)
+                                )}{" "}
+                                ago
+                              </div>
                             </div>
-                            <div className="flex items-center justify-center font-bold">
-                              {comment.user.name}
+                            <div className="comment content mr-2 border-dotted border-l-2 border-gray-400 pl-4">
+                              {comment.content}
                             </div>
-                            <div className="mr-2 ml-2 font-light text-xs flex items-center justify-center">
-                              {formatDistanceToNow(
-                                new Date(comment.created_at)
-                              )}{" "}
-                              ago
+                            <div className="vote font-bold flex flex-row items-center">
+                              <button className="w-fit" onClick={() => handleCommentVote(comment.id, "up")}><UpCircleOutlined /></button>
+                              {post.comments.map((comment) => comment.comment_vote?.reduce((acc, vote) => acc + vote.upvote, 0) ?? 0)
+                                .reduce((acc, curr) => acc + curr, 0)}
+                              <button className="w-fit" onClick={() => handleCommentVote(comment.id, "down")}><DownCircleOutlined /></button>
+                              {post.comments.map((comment) => comment.comment_vote?.reduce((acc, vote) => acc + vote.downvote, 0) ?? 0)
+                                .reduce((acc, curr) => acc + curr, 0)}
                             </div>
                           </div>
-                          <div className="comment content mr-2 border-dotted border-l-2 border-gray-400 pl-4">
-                            {comment.content}
-                          </div>
-                          <div className="vote font-bold flex flex-row items-center">
-                            <button className="w-fit" onClick={() => handleCommentVote(comment.id, "up")}><UpCircleOutlined/></button>
-                            {post.comments.map((comment) => comment.comment_vote?.reduce((acc, vote) => acc + vote.upvote, 0) ?? 0)
-                            .reduce((acc, curr) => acc + curr, 0)}
-                            <button className="w-fit" onClick={() => handleCommentVote(comment.id, "down")}><DownCircleOutlined/></button>
-                            {post.comments.map((comment) => comment.comment_vote?.reduce((acc, vote) => acc + vote.downvote, 0) ?? 0)
-                            .reduce((acc, curr) => acc + curr, 0)}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
                     )}
                     <div className="text comment flex mt-2 ml-4">
                       <img
                         // src="/social-media.png"
                         src={user?.avatar_url ? user.avatar_url : "/social-media.png"}
-                        alt="cmt icon"
+                        alt=""
                         width={32}
                         height={32}
                       ></img>
                       <input
                         type="text"
                         key={post.id}
-                        className="p-1 border border-gray-400 ml-2 rounded-lg w-[60vh]"
+                        className="p-1 border border-gray-400 ml-2 rounded-lg w-[60vh] flex-1"
                         placeholder="Send message"
                         id={post.id}
                         value={contentMap[post.id] || ""}
@@ -489,7 +494,7 @@ const Home = () => {
                         className="flex items-center"
                         onClick={handleSubmit}
                       >
-                        <img src="/send.png" alt="send cmt"></img>
+                        <img src="/send.png" alt=""></img>
                       </button>
                     </div>
                   </div>
@@ -498,7 +503,7 @@ const Home = () => {
             </div>
           ))}
         </div>
-        <div className="recent-post w-1/3 bg-white p-4 sticky top-[72px] h-min">
+        {/* <div className="recent-post w-1/3 bg-white p-4 sticky top-[72px] h-min">
           <div>
             <p className="font-bold text-black">RECENT POST</p>
           </div>
@@ -549,7 +554,7 @@ const Home = () => {
               )))}
             </div>
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -11,13 +11,15 @@ const CreatePost = () => {
   const { user, isLoggedIn, logout } = authInfo
     ? authInfo
     : { isLoggedIn: false, logout: () => { } };
+  console.log(user)
   const [tags, setTags] = useState([]);
   const [tag, setTag] = useState([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedImages, setSelectedImages] = useState([]);
   const [uploadImage, setUploadImage] = useState([]);
-  const [sound, setSound] = useState([]);
+  const [selectedSounds, setSelectedSounds] = useState([]);
+  const [uploadSound, setUploadSound] = useState([]);
   const handleImageChange = (e) => {
     const files = e.target.files;
     if (files) {
@@ -30,7 +32,8 @@ const CreatePost = () => {
     const files = e.target.files;
     if (files) {
       const newSoundUrls = Array.from(files).map((file) => file.name);
-      setSound((prevSounds) => [...prevSounds, ...newSoundUrls]);
+      setSelectedSounds((prevSounds) => [...prevSounds, ...newSoundUrls]);
+      setUploadSound((prevSounds) => [...prevSounds, ...files]);
     }
   };
   useEffect(() => {
@@ -54,17 +57,25 @@ const CreatePost = () => {
     e.preventDefault();
     try {
       const formData = new FormData();
-      console.log(uploadImage)
       uploadImage.forEach((image) => {
         formData.append('files', image);
       });
-
       const upload = await fetch('http://127.0.0.1:8000/upload', {
         method: 'POST',
         body: formData,
       });
       const responseUpload = await upload.json();
-      // console.log(responseUpload)
+      const formDataSound = new FormData();
+      uploadSound.forEach((sound) => {
+        formDataSound.append('files', sound);
+      });
+      const upload1 = await fetch('http://127.0.0.1:8000/upload', {
+        method: 'POST',
+        body: formDataSound,
+      });
+      const responseUploadSound = await upload1.json();
+      console.log(responseUpload?.urls[0])
+      console.log(responseUploadSound?.urls[0])
       const response = await fetch(`http://localhost:8000/posts/user/${user.id}`, {
         method: 'POST',
         headers: {
@@ -75,7 +86,8 @@ const CreatePost = () => {
             user_id: user.id,
             title: title,
             description: description,
-            image_url: responseUpload.urls[0],
+            image_url: responseUpload?.urls[0] || "",
+            sound_url: responseUploadSound?.urls[0] || "",
             is_deleted: false
           },
           post_tags: tag.map(tag_id => ({ post_id: 0, tag_id: tag_id.id }))
@@ -179,7 +191,7 @@ const CreatePost = () => {
                 onChange={(e) => setTitle(e.target.value)}
                 type="text" className="w-full border border-gray-300 flex items-center p-2 rounded-lg" required></input>
             </div>
-            <div className="h-[50%] mb-1">
+            <div className="h-[35%] mb-1">
               <span>Description</span><span className="text-red-600 ml-1">*</span>
               <textarea
                 onChange={(e) => setDescription(e.target.value)}
@@ -195,16 +207,6 @@ const CreatePost = () => {
                     multiple
                   // className="mb-4"
                   />
-                  <div className="flex w-full mt-2">
-                    {selectedImages.map((image, index) => (
-                      <img
-                        key={index}
-                        src={image}
-                        alt="Uploaded"
-                        className="w-[40px] h-[40px] mx-2"
-                      />
-                    ))}
-                  </div>
                 </div>
               </div>
             </div>
@@ -232,7 +234,7 @@ const CreatePost = () => {
               </div>
             </div>
 
-            <div className="h-1 bg-[#d9d9d9] mb-2"></div>
+            {/* <div className="h-1 bg-[#d9d9d9] mb-2"></div> */}
             <div className="flex items-center text-center justify-end">
               <button
                 to="/"

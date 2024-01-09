@@ -15,32 +15,31 @@ const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   const login = (values) => {
+    console.log(values)
     localStorage.setItem(
       "current-user",
       JSON.stringify({
-        avatar_url: values.avatar_url,
-        classname: values.classname,
-        cover_image_url: values.cover_image_url,
+        avatar_url: values.picture,
+        cover_image_url: values.picture,
         created_at: values.created_at,
-        grade: values.grade,
         id: values.id,
         name: values.name,
-        password: values.password,
+        password: values.email,
         updated_at: values.updated_at,
-        username: values.username,
+        username: values.email,
+        google_id: values.id,
       })
     );
     setUser({
-      avatar_url: values.avatar_url,
-      classname: values.classname,
-      cover_image_url: values.cover_image_url,
+      avatar_url: values.picture,
+      cover_image_url: values.picture,
       created_at: values.created_at,
-      grade: values.grade,
       id: values.id,
       name: values.name,
-      password: values.password,
+      password: values.email,
       updated_at: values.updated_at,
-      username: values.username,
+      username: values.email,
+      google_id: values.id,
     });
     localStorage.setItem("access-token", "password");
     setIsLoggedIn(true);

@@ -736,9 +736,6 @@ const Profile = () => {
                 )}
               </div>
               <div className="ml-2 pt-4">{user?.name}</div>
-              <div className="ml-2">
-                Lớp: {user?.classname} - {user?.grade}
-              </div>
             </div>
             <div className="w-full mt-2 flex justify-center items-center">
               <Button type="primary" icon={<EditOutlined />} size={"large"} style={{color: '#000'}} onClick={() => handleUpdateProfile()} >
