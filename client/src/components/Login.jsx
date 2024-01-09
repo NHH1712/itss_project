@@ -1,11 +1,12 @@
-import {Link, useNavigate} from "react-router-dom"
-import { useState } from 'react';
+import { Link, useNavigate } from "react-router-dom"
+import { useState, useEffect } from 'react';
 import { useAuth } from "../contexts/AuthContext";
 import { message } from 'antd';
+import { googleLogout, useGoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const navigateTo = useNavigate();
   const authInfo = useAuth();
   const { login } = authInfo ? authInfo : { login: (values) => Boolean };
   const handleSubmit = async (e) => {
@@ -19,11 +20,9 @@ const Login = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        // console.log(data)
-        if(data){
+        if (data) {
           login(data);
-          navigateTo('/');
-        }else{
+        } else {
           message.error('Login failed');
         }
       } else {
@@ -33,48 +32,102 @@ const Login = () => {
       message.error('Error:', error);
     }
   }
+  const [user, setUser] = useState([]);
+  const loginGoogle = useGoogleLogin({
+    onSuccess: (codeResponse) => setUser(codeResponse),
+    onError: (error) => console.log('Login Failed:', error)
+  });
+  useEffect(() => {
+    if (user) {
+      axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
+        headers: {
+          Authorization: `Bearer ${user.access_token}`,
+          Accept: 'application/json'
+        }
+      })
+        .then((res) => {
+          console.log(res.data)
+          login(res.data)
+        })
+        .catch((err) => console.log(err));
+    }
+  },
+    [user]
+  );
+  const logoutGoogle = () => {
+    googleLogout();
+  };
   return (
     <form onSubmit={handleSubmit}>
-    <div className="h-screen w-screen bg-[#e7e5e4] flex justify-center items-center">
-      <div className="bg-white w-3/5 h-4/5 rounded">
-        <div className="font-bold text-3xl text-center mt-16 mb-8">LOGIN</div>
-        <div className="w-4/5 mx-auto h-12 mb-8">
-          <p>Username</p>
-          <div className="border rounded-lg py-2 flex">
-            <input
-              type="text"
-              placeholder="Enter your Username"
-              className="ml-2 flex-grow outline-none"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
+      <div className="h-screen w-screen bg-[#e7e5e4] flex justify-center items-center">
+        <div className="bg-white w-3/5 h-4/5 rounded">
+          <div className="font-bold text-3xl text-center mt-16 mb-8">LOGIN</div>
+          <div className="w-4/5 mx-auto h-12 mb-8">
+            <p>Username</p>
+            <div className="border rounded-lg py-2 flex">
+              <input
+                type="text"
+                placeholder="Enter your Username"
+                className="ml-2 flex-grow outline-none"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
           </div>
-        </div>
-        <div className="w-4/5 mx-auto h-12 mb-8">
-          <p>Password</p>
-          <div className="border rounded-lg py-2 flex">
-            <input
-              type="password"
-              placeholder="Enter your Password"
-              className="ml-2 flex-grow outline-none"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+          <div className="w-4/5 mx-auto h-12 mb-8">
+            <p>Password</p>
+            <div className="border rounded-lg py-2 flex">
+              <input
+                type="password"
+                placeholder="Enter your Password"
+                className="ml-2 flex-grow outline-none"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
           </div>
-        </div>
-        <div className="pt-4">
-          <button className="w-4/5 mx-auto bg-[#0e64d2] rounded-lg h-12 flex items-center justify-center text-white font-bold mb-4">Login</button>
-        </div>
-        <div className="w-3/5 mx-auto flex items-center justify-center pb-2">
+          <div className="pt-4">
+            <button className="w-4/5 mx-auto bg-[#0e64d2] rounded-lg h-12 flex items-center justify-center text-white font-bold mb-4">Login</button>
+          </div>
+          <div className="w-3/5 mx-auto flex items-center justify-center pb-2">
             <p>Don’t have an account?</p>
             <button className="ml-2 font-bold">
               <Link to="/signup">Sign Up</Link>
             </button>
           </div>
+          <div>
+            {/* {profile ? (
+              <div>
+                <img src={profile.picture} alt="user image" />
+                <h3>User Logged in</h3>
+                <p>Name: {profile.name}</p>
+                <p>Email Address: {profile.email}</p>
+                <br />
+                <br />
+                <button onClick={logoutGoogle}>Log out</button>
+              </div>
+            ) : (
+              <button 
+                className="border border-gray-500 px-4 py-2.5 w-1/4 mx-auto flex items-center justify-center"
+                style={{ color: 'black', borderRadius: '5px', cursor: 'pointer' }}
+                onClick={() => loginGoogle()}>
+                  <img src="./google.png" width={24} height={24}></img>
+                  <p className="pl-1">Sign in with Google </p>
+                </button>
+            )} */}
+            <button
+              className="border border-gray-500 px-4 py-2.5 w-1/4 mx-auto flex items-center justify-center"
+              style={{ color: 'black', borderRadius: '5px', cursor: 'pointer' }}
+              onClick={() => loginGoogle()}>
+              <img src="./google.png" width={24} height={24}></img>
+              <p className="pl-1">Sign in with Google </p>
+            </button>
+          </div>
+        </div>
+
       </div>
-    </div>
     </form>
   );
 };

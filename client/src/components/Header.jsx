@@ -52,12 +52,12 @@ const Header = ({ onSearch }) => {
           >
             HOME
           </Link>
-          <Link
+          {/* <Link
             to="/video-call"
             className={`${location.pathname === '/video-call' ? 'w-1/2 bg-[#eeeeee] rounded-lg px-1 py-1.5 text-[#0079D3] font-bold text-[15px]' : 'w-1/2 font-bold text-[15px] text-black opacity-50'}`}
           >
             VIDEO CALL
-          </Link>
+          </Link> */}
         </div>
         {/* <SearchBar /> */}
         <div className="w-full">

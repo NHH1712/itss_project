@@ -9,9 +9,12 @@ import Profile from "./components/Profile";
 import UpdateProfile from "./components/UpdateProfile";
 import VideoCall from "./components/VideoCall";
 import Upload from "./components/Upload";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 function App() {
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
   return (
     <BrowserRouter>
+    <GoogleOAuthProvider clientId={clientId}>
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} exact />
@@ -21,10 +24,11 @@ function App() {
           <Route path="/update-post/:postId" element={<UpdatePost />} exact />
           <Route path="/profile" element={<Profile />} exact />
           <Route path="/update-profile/:profileId" element={<UpdateProfile/>} />
-          <Route path="/video-call" element={<VideoCall/>} />
+          {/* <Route path="/video-call" element={<VideoCall/>} /> */}
           <Route path="/upload" element={<Upload/>} />
         </Routes>
       </AuthProvider>
+      </GoogleOAuthProvider>
     </BrowserRouter>
   );
 }
