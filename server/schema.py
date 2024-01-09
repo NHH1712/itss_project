@@ -22,6 +22,7 @@ class Posts(BaseModel):
     title:str
     description:str
     image_url:str
+    sound_url:str
     is_deleted: bool
 
     class Config:

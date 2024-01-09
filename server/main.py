@@ -174,7 +174,7 @@ async def post(post: SchemaPosts):
     return db_post
 @app.post('/posts/user/{user_id}', response_model=SchemaPosts)
 async def post_by_user_id(user_id: int, post: SchemaPosts, post_tags: List[SchemaPostTag]):
-    new_post = ModelPosts(user_id=user_id, title=post.title, description=post.description, image_url=post.image_url)
+    new_post = ModelPosts(user_id=user_id, title=post.title, description=post.description, image_url=post.image_url, sound_url=post.sound_url)
     db.session.add(new_post)
     db.session.commit()
 
