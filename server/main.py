@@ -54,17 +54,20 @@ async def root():
 async def upload_files(files: List[UploadFile]):
     try:
         uploaded_urls = []
+        prefix = "web_hust/"  
 
         for file in files:
-            s3.upload_fileobj(file.file, os.environ['AWS_BUCKET_NAME'], file.filename,  ExtraArgs={
-                    'ContentType': file.content_type,
-                })
-            uploaded_url = f"https://{os.environ['AWS_BUCKET_NAME']}.s3.{os.environ['AWS_REGION']}.amazonaws.com/{file.filename}"
+            object_key = prefix + file.filename
+            s3.upload_fileobj(file.file, os.environ['AWS_BUCKET_NAME'], object_key, ExtraArgs={
+                'ContentType': file.content_type,
+            })
+            uploaded_url = f"https://{os.environ['AWS_BUCKET_NAME']}.s3.{os.environ['AWS_REGION']}.amazonaws.com/{object_key}"
             uploaded_urls.append(uploaded_url)
 
         return {"message": "Upload successful", "urls": uploaded_urls}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 @app.post('/login')

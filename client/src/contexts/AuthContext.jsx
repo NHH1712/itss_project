@@ -19,27 +19,25 @@ const AuthProvider = ({ children }) => {
     localStorage.setItem(
       "current-user",
       JSON.stringify({
-        avatar_url: values.picture,
-        cover_image_url: values.picture,
+        avatar_url: values.avatar_url,
+        cover_image_url: values.cover_image_url,
         created_at: values.created_at,
         id: values.id,
         name: values.name,
-        password: values.email,
+        password: values.password,
         updated_at: values.updated_at,
-        username: values.email,
-        google_id: values.id,
+        username: values.username,
       })
     );
     setUser({
-      avatar_url: values.picture,
-      cover_image_url: values.picture,
+      avatar_url: values.avatar_url,
+      cover_image_url: values.cover_image_url,
       created_at: values.created_at,
       id: values.id,
       name: values.name,
-      password: values.email,
+      password: values.password,
       updated_at: values.updated_at,
-      username: values.email,
-      google_id: values.id,
+      username: values.username,
     });
     localStorage.setItem("access-token", "password");
     setIsLoggedIn(true);

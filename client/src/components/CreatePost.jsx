@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { Select, message } from 'antd';
 import { Button, Dropdown, Space } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 const CreatePost = () => {
   const navigateTo = useNavigate();
   const authInfo = useAuth();
@@ -11,7 +13,7 @@ const CreatePost = () => {
   const { user, isLoggedIn, logout } = authInfo
     ? authInfo
     : { isLoggedIn: false, logout: () => { } };
-  console.log(user)
+  // console.log(user)
   const [tags, setTags] = useState([]);
   const [tag, setTag] = useState([]);
   const [title, setTitle] = useState("");
@@ -191,11 +193,20 @@ const CreatePost = () => {
                 onChange={(e) => setTitle(e.target.value)}
                 type="text" className="w-full border border-gray-300 flex items-center p-2 rounded-lg" required></input>
             </div>
-            <div className="h-[35%] mb-1">
+            {/* <div className="h-[35%] mb-1">
               <span>Description</span><span className="text-red-600 ml-1">*</span>
               <textarea
                 onChange={(e) => setDescription(e.target.value)}
                 type="text" className="w-full border border-gray-300 flex items-center p-2 rounded-lg h-[90%]" required></textarea>
+            </div> */}
+            <div className="h-[35%] mb-1">
+              <span>Description</span><span className="text-red-600 ml-1">*</span>
+              <ReactQuill
+                value={description}
+                onChange={(value) => setDescription(value)}
+                className="h-3/5" 
+                required
+              />
             </div>
             <div className="mb-1">
               <span>Sound</span>

@@ -140,7 +140,7 @@ const Home = () => {
       console.error("Error:", error);
     }
   };
-  const [sortCriteria, setSortCriteria] = useState("new");
+  const [sortCriteria, setSortCriteria] = useState("best");
   const handleSortClick = (criteria) => {
     setSortCriteria(criteria);
   };
@@ -215,9 +215,16 @@ const Home = () => {
     const searchFilteredPosts = filteredPosts.filter(searchFilter);
     switch (sortCriteria) {
       case "best":
-        return searchFilteredPosts.sort((a, b) => b.id - a.id);
-      case "hot":
         return searchFilteredPosts.sort((a, b) => b.post_vote?.length - a.post_vote?.length);
+      case "hot":
+        return searchFilteredPosts.sort((a, b) => {
+          const voteDiff = b.post_vote?.length - a.post_vote?.length;
+          if (voteDiff !== 0) {
+            return voteDiff; // Sắp xếp theo số vote cao nhất
+          } else {
+            return new Date(b.created_at) - new Date(a.created_at); // Nếu số vote bằng nhau, sắp xếp theo thời gian
+          }
+        });
       case "new":
         return searchFilteredPosts.sort(
           (a, b) => new Date(b.created_at) - new Date(a.created_at)

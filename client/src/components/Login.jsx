@@ -22,6 +22,7 @@ const Login = () => {
         const data = await response.json();
         if (data) {
           login(data);
+          message.success('Login successfully');
         } else {
           message.error('Login failed');
         }
@@ -56,6 +57,7 @@ const Login = () => {
   },[]);
   const usernameUsers = dataUsers.map((user) => user.username);
   const signupWithGoogle = async (data) => {
+    console.log(data);
     try {
       const response = await fetch('http://localhost:8000/users/', {
         method: 'POST',
@@ -64,10 +66,10 @@ const Login = () => {
         },
         body: JSON.stringify({
           name: data.name,
-          username: data.email,
-          password: data.email,
-          avatar_url: data.picture,
-          cover_image_url: data.picture,
+          username: data.username,
+          password: data.password,
+          avatar_url: data.avatar_url,
+          cover_image_url: data.cover_image_url,
           google_id: data.google_id,
         })
       });
@@ -80,6 +82,29 @@ const Login = () => {
       message.error("Error:", error);
     }
   }
+  const signinWithGoogle = async (data) => {
+    try {
+      const response = await fetch(`http://localhost:8000/login/?username=${data.username}&password=${data.password}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data) {
+          login(data);
+          message.success('Login successfully');
+        } else {
+          message.error('Login failed');
+        }
+      } else {
+        message.error('Login failed');
+      }
+    } catch (error) {
+      message.error('Error:', error);
+    }
+  }
   useEffect(() => {
     if (user && user.access_token) {
       axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
@@ -89,19 +114,25 @@ const Login = () => {
         }
       })
         .then((res) => {
-          const userInfo = {
+          const userSignUp = {
+            username: res.data.email,
+            password: res.data.email,
             name: res.data.name,
-            email: res.data.email,
-            picture: res.data.picture,
+            avatar_url: res.data.picture,
+            cover_image_url: res.data.picture,
             google_id: res.data.id,
           };
+          const userSignIn = {
+            username: res.data.email,
+            password: res.data.email,
+          };
           if(usernameUsers.includes(res.data.email)){
-            login(userInfo)
+            signinWithGoogle(userSignIn)
             return;
           }
-          signupWithGoogle(userInfo)
+          signupWithGoogle(userSignUp)
           setTimeout(() => {
-            login(userInfo)
+            signinWithGoogle(userSignIn)
           }, 2000)
         })
         .catch((err) => console.log(err));
