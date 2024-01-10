@@ -197,6 +197,59 @@ const Home = () => {
       console.error("Error:", error);
     }
   };
+  const handleDeleteComment = async (commentId) => {
+    console.log(commentId)
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/comments/${commentId}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        window.location.reload(true)
+      } else {
+        console.error("Delete failed");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+  const [editModeCommentId, setEditModeCommentId] = useState(null);
+  const [editedComments, setEditedComments] = useState({});
+  const handleEditComment = (commentId) => {
+    setEditModeCommentId(commentId);
+    const commentToEdit = posts.flatMap(post => post.comments).find(comment => comment.id === commentId);
+    setEditedComments({ [commentId]: commentToEdit.content });
+  };
+
+  const handleSaveEditComment = async (commentId) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/comments/${commentId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: 0,
+          post_id: 0,
+          content: editedComments[commentId],
+        }),
+      });
+      if (response.ok) {
+        setEditModeCommentId(null);
+        setEditedComments({});
+        window.location.reload(true);
+      } else {
+        console.error("Edit comment failed");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const handleCancelEditComment = (commentId) => {
+    setEditModeCommentId(null);
+    setEditedComments({});
+  };
+
   const [searchValue, setSearchValue] = useState("");
   const handleSearch = (searchValue) => {
     setSearchValue(searchValue);
@@ -416,10 +469,9 @@ const Home = () => {
                     </button>
                   </div>
                   <div className="w-[90%]">
-                    <div className="post-title font-bold text-4xl mb-1 break-words">
-                      {post.title}
-                    </div>
-                    <div className="description mb-1 max-w-full">{post.description}</div>
+                    <div className="post-title mb-1 break-words" dangerouslySetInnerHTML={{ __html: post.title }} />
+                    {/* <div className="description mb-1 max-w-full">{post.description}</div> */}
+                    <div className="description mb-1 max-w-ful" dangerouslySetInnerHTML={{ __html: post.description }} />
                     <div className="image mb-1 w-4/5">
                       {post.image_url && <img src={post.image_url} alt="" className="w-full" />}
                     </div>
@@ -441,7 +493,7 @@ const Home = () => {
                 <div className="comment-post flex mt-2">
                   <div className="border-l-2 border-gray-400 w-full">
                     {post.comments?.length > 0 && (
-                      <div className="h-20 overflow-y-auto">
+                      <div className="h-32 overflow-y-auto">
                         {post.comments?.map((comment) => (
                           <div key={comment.id} className="comment-item ml-4">
                             <div className="comment header flex">
@@ -463,10 +515,76 @@ const Home = () => {
                                 )}{" "}
                                 ago
                               </div>
+                              <div className="flex">
+                                {comment.user_id === user?.id && (
+                                  <button onClick={() => handleEditComment(comment.id)}>
+                                    <EditOutlined />
+                                  </button>
+                                )}
+                                {isLoggedIn && post.user_id === user?.id && (
+                                  <>
+                                    {comment.user_id === user?.id && (
+                                      <button onClick={() => handleEditComment(comment.id, comment.post_tag)}>
+                                        <EditOutlined />
+                                      </button>
+                                    )}
+                                    <button onClick={() => handleDeleteComment(comment.id)}>
+                                      <DeleteOutlined />
+                                    </button>
+                                    {/* <Modal
+                                      title="Are you sure about that"
+                                      open={isModalOpen}
+                                      onOk={handleOk}
+                                      onCancel={handleCancel}
+                                      styles={customStyles}
+                                      okButtonProps={{
+                                        style: {
+                                          background: "#DC2626",
+                                          borderColor: "#FFFFFF",
+                                        },
+                                      }}
+                                      cancelButtonProps={{
+                                        style: {
+                                          background: "#e2e2e2",
+                                          borderColor: "#e2e2e2",
+                                        },
+                                      }}
+                                    >
+                                      <div className="bg-gray-500 border mt-1 mb-4"></div>
+                                      <div className="flex items-center justify-center text-center">
+                                        <div className="flex flex-col items-center">
+                                          <img src="/warning.png" alt=""></img>
+                                          <span className="font-bold mt-2">
+                                            Do you really want to delete this post? <br />
+                                            This process cannot be redone
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </Modal> */}
+                                  </>
+                                )}
+                              </div>
                             </div>
-                            <div className="comment content mr-2 border-dotted border-l-2 border-gray-400 pl-4">
+                            {editModeCommentId === comment.id ? (
+                              <>
+                                <textarea
+                                  className="border border-gray-300 rounded px-2 py-1"
+                                  value={editedComments[comment.id] || ""}
+                                  onChange={(e) => setEditedComments({ ...editedComments, [comment.id]: e.target.value })}
+                                />
+                                <button onClick={() => handleSaveEditComment(comment.id)}>Save</button>
+                                <button onClick={() => handleCancelEditComment(comment.id)}>Cancel</button>
+                              </>
+                            ) : (
+                              <>
+                                <div className="comment content mr-2 border-dotted border-l-2 border-gray-400 pl-4">
+                                  {comment.content}
+                                </div>
+                              </>
+                            )}
+                            {/* <div className="comment content mr-2 border-dotted border-l-2 border-gray-400 pl-4">
                               {comment.content}
-                            </div>
+                            </div> */}
                             <div className="vote font-bold flex flex-row items-center">
                               <button className="w-fit" onClick={() => handleCommentVote(comment.id, "up")}><UpCircleOutlined /></button>
                               {post.comments.map((comment) => comment.comment_vote?.reduce((acc, vote) => acc + vote.upvote, 0) ?? 0)

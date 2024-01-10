@@ -362,8 +362,8 @@ async def comment(comment: SchemaComments):
 @app.put('/comments/{comment_id}', response_model=SchemaComments)
 async def update_comment(comment_id: int, comment: SchemaComments):
     db_comment = db.session.query(ModelComments).filter(ModelComments.id == comment_id).first()
-    db_comment.user_id = comment.user_id
-    db_comment.post_id = comment.post_id
+    # db_comment.user_id = comment.user_id
+    # db_comment.post_id = comment.post_id
     db_comment.content = comment.content
     db.session.commit()
     return db_comment

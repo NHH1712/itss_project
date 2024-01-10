@@ -189,9 +189,15 @@ const CreatePost = () => {
           <div className="bg-white h-4/5 px-4 py-2 rounded">
             <div className="mb-1">
               <span>Title</span><span className="text-red-600 ml-1">*</span>
-              <input
+              {/* <input
                 onChange={(e) => setTitle(e.target.value)}
-                type="text" className="w-full border border-gray-300 flex items-center p-2 rounded-lg" required></input>
+                type="text" className="w-full border border-gray-300 flex items-center p-2 rounded-lg" required></input> */}
+              <ReactQuill
+                value={title}
+                onChange={(value) => setTitle(value)}
+                className="h-3/5"
+                required
+              />
             </div>
             {/* <div className="h-[35%] mb-1">
               <span>Description</span><span className="text-red-600 ml-1">*</span>

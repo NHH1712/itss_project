@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { Select, message, Button } from "antd";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 const UpdatePost = () => {
   const navigateTo = useNavigate();
   const authInfo = useAuth();
@@ -72,6 +74,7 @@ const UpdatePost = () => {
           body: formData,
         });
         const responseUpload = await upload.json();
+
         const response = await fetch(
           `http://127.0.0.1:8000/posts/change/${postId}`,
           {
@@ -85,6 +88,7 @@ const UpdatePost = () => {
                 title: dataPost.title,
                 description: dataPost.description,
                 image_url: responseUpload.urls[0],
+                sound_url: "",
                 is_deleted: false,
               },
               post_tags: dataPostTag.map((tag_id) => ({
@@ -118,6 +122,7 @@ const UpdatePost = () => {
               title: dataPost.title,
               description: dataPost.description,
               image_url: dataPost.image_url,
+              sound_url: "",
               is_deleted: false,
             },
             post_tags: dataPostTag.map((tag_id) => ({
@@ -207,7 +212,7 @@ const UpdatePost = () => {
             <div className="mb-1">
               <span>Title</span>
               <span className="text-red-600 ml-1">*</span>
-              <input
+              {/* <input
                 value={dataPost?.title || ""}
                 onChange={(e) =>
                   setDataPost((prevData) => ({
@@ -217,12 +222,23 @@ const UpdatePost = () => {
                 }
                 type="text"
                 className="w-full border border-gray-300  flex items-center p-2 rounded-lg"
-              ></input>
+              ></input> */}
+              <ReactQuill 
+                value={dataPost?.title || ""}
+                onChange={(value) =>
+                  setDataPost((prevData) => ({
+                    ...prevData,
+                    title: value,
+                  }))
+                }
+                className="h-3/5"
+                required
+              />
             </div>
             <div className="h-[50%] mb-1">
               <span>Description</span>
               <span className="text-red-600 ml-1">*</span>
-              <textarea
+              {/* <textarea
                 value={dataPost?.description || ""}
                 onChange={(e) =>
                   setDataPost((prevData) => ({
@@ -232,7 +248,18 @@ const UpdatePost = () => {
                 }
                 type="text"
                 className="w-full border border-gray-300  flex items-center p-2 h-[90%] rounded-lg"
-              ></textarea>
+              ></textarea> */}
+              <ReactQuill
+                value={dataPost?.description || ""}
+                onChange={(value) =>
+                  setDataPost((prevData) => ({
+                    ...prevData,
+                    description: value,
+                  }))
+                }
+                className="h-3/5"
+                required
+              />
             </div>
             {/* <div className="border border-[#DAE0E6] mt-10 mb-4 w-1/6 rounded-2xl">
             <button className="w-full"> + Image</button>
